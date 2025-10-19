@@ -1,0 +1,156 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\routes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\routes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\pages\\upload.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\pages\\upload.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\pages\\analysis.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\pages\\analysis.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "App.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\App.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\App.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\App.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\App.razor",
+              "ViewState": "AgIAACUBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:20:09.188Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAALEAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:19:05.646Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Analysis.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Pages\\Analysis.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Pages\\Analysis.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Pages\\Analysis.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Pages\\Analysis.razor",
+              "ViewState": "AgIAACMBAAAAAAAAAIBJwCUBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:05:46.249Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Upload.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Pages\\Upload.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Pages\\Upload.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Pages\\Upload.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Pages\\Upload.razor",
+              "ViewState": "AgIAALAAAAAAAAAAAIBJwAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:03:31.347Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Routes.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Routes.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Routes.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Routes.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Routes.razor",
+              "ViewState": "AgIAAAwAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:02:08.39Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Layout\\NavMenu.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAHwAAAAAAAAAAIBJwH4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:02:00.075Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Home.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Pages\\Home.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Pages\\Home.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Pages\\Home.razor",
+              "ViewState": "AgIAAHUBAAAAAAAAAABBwHYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T09:01:30.5Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Program.cs",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Program.cs",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Program.cs",
+              "RelativeToolTip": "allofthesestarshaveareason\\Program.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAqwCIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T07:21:52.536Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,374 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>Video Analysis Platform - AI-Powered Intelligence</PageTitle>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 50%, rgba(79, 172, 254, 0.08) 100%);
+        border-radius: 24px;
+        padding: 80px 40px;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+        animation: heroGlow 15s ease-in-out infinite;
+    }
+    
+    @@keyframes heroGlow {
+        0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.5; }
+        50% { transform: scale(1.2) translate(20px, 20px); opacity: 0.8; }
+    }
+    
+    .hero-icon-wrapper {
+        position: relative;
+        display: inline-block;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .hero-icon-wrapper::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140%;
+        height: 140%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+        filter: blur(30px);
+        animation: iconGlow 3s ease-in-out infinite;
+    }
+    
+    @@keyframes iconGlow {
+        0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    }
+    
+    .feature-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        transition: left 0.7s ease;
+    }
+    
+    .feature-card:hover::before {
+        left: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 
+            0 24px 48px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(102, 126, 234, 0.3),
+            0 0 0 1px rgba(102, 126, 234, 0.4) inset;
+        border-color: rgba(102, 126, 234, 0.5);
+    }
+    
+    .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        position: relative;
+        transition: all 0.4s ease;
+    }
+    
+    .feature-card:hover .feature-icon-wrapper {
+        transform: scale(1.1) rotate(5deg);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    }
+    
+    .step-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .step-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #4facfe 100%);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+    
+    .step-card:hover::after {
+        transform: scaleX(1);
+    }
+    
+    .step-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(102, 126, 234, 0.5);
+        box-shadow: 
+            0 16px 32px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(102, 126, 234, 0.2);
+    }
+    
+    .step-number {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 
+            0 8px 16px rgba(102, 126, 234, 0.4),
+            0 0 20px rgba(102, 126, 234, 0.3) inset;
+        transition: all 0.4s ease;
+    }
+    
+    .step-card:hover .step-number {
+        transform: scale(1.15) rotate(360deg);
+        box-shadow: 
+            0 12px 24px rgba(102, 126, 234, 0.6),
+            0 0 30px rgba(102, 126, 234, 0.5) inset;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%);
+        background-size: 200% 200%;
+        animation: gradientFlow 8s ease infinite;
+        border-radius: 24px;
+        padding: 60px;
+        box-shadow: 
+            0 16px 48px rgba(102, 126, 234, 0.5),
+            0 0 40px rgba(118, 75, 162, 0.3),
+            0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    @@keyframes gradientFlow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: ctaGlow 10s linear infinite;
+    }
+    
+    @@keyframes ctaGlow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .premium-button {
+        background: white;
+        color: #667eea;
+        font-weight: 700;
+        padding: 16px 48px;
+        font-size: 1.125rem;
+        border-radius: 12px;
+        box-shadow: 
+            0 8px 24px rgba(0, 0, 0, 0.2),
+            0 0 20px rgba(255, 255, 255, 0.3) inset;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .premium-button:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 
+            0 16px 32px rgba(0, 0, 0, 0.3),
+            0 0 30px rgba(255, 255, 255, 0.5) inset;
+    }
+    
+    .section-title {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #4facfe 100%);
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+    <!-- Hero Section -->
+    <div class="hero-section reveal-up">
+        <MudGrid Spacing="4" Justify="Justify.Center">
+            <MudItem xs="12" Class="text-center" Style="position: relative; z-index: 1;">
+                <div class="hero-icon-wrapper mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" 
+                             Size="Size.Large" 
+                             Color="Color.Primary" 
+                             Style="font-size: 7rem; filter: drop-shadow(0 8px 24px rgba(102, 126, 234, 0.6));" />
+                </div>
+                <MudText Typo="Typo.h1" GutterBottom="true" Class="gradient-text" Style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 4rem; letter-spacing: -2px;">
+                    Video Analysis Platform
+                </MudText>
+                <MudText Typo="Typo.h5" Color="Color.Secondary" Class="mb-8" Style="max-width: 900px; margin: 0 auto; font-weight: 400; line-height: 1.8;">
+                    Transform your videos into actionable insights with cutting-edge AI technology.
+                    <br />Intelligent scene detection, precise transcription, and deep content analysis.
+                </MudText>
+                <div class="d-flex justify-center gap-4 flex-wrap">
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               Size="Size.Large"
+                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                               OnClick="NavigateToUpload"
+                               Class="glow-on-hover"
+                               Style="padding: 16px 40px; font-size: 1.1rem; font-weight: 700; border-radius: 12px;">
+                        Start Analyzing
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Primary" 
+                               Size="Size.Large"
+                               StartIcon="@Icons.Material.Filled.PlayArrow"
+                               OnClick="NavigateToDemo"
+                               Style="padding: 16px 40px; font-size: 1.1rem; font-weight: 600; border-radius: 12px; border-width: 2px;">
+                        Watch Demo
+                    </MudButton>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <!-- Features Section -->
+    <div class="mb-12">
+        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true" Class="section-title mb-8" Style="font-weight: 800;">
+            Premium Features
+        </MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Secondary" Class="mb-10" Style="font-weight: 400;">
+            Enterprise-grade tools for comprehensive video intelligence
+        </MudText>
+        
+        <MudGrid Spacing="4">
+            @foreach (var (feature, index) in GetFeatures().Select((f, i) => (f, i)))
+            {
+                <MudItem xs="12" sm="6" md="4" Style="animation-delay: @((index * 100))ms;" Class="reveal-up">
+                    <MudPaper Class="feature-card pa-8 premium-shadow">
+                        <div class="feature-icon-wrapper">
+                            <MudIcon Icon="@feature.Icon" 
+                                     Color="@feature.Color" 
+                                     Size="Size.Large" 
+                                     Style="font-size: 2.5rem; filter: drop-shadow(0 4px 12px currentColor);" />
+                        </div>
+                        <MudText Typo="Typo.h5" GutterBottom="true" Style="font-weight: 700;">@feature.Title</MudText>
+                        <MudText Color="Color.Secondary" Style="line-height: 1.7;">@feature.Description</MudText>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="my-16">
+        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true" Class="section-title mb-8" Style="font-weight: 800;">
+            How It Works
+        </MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Secondary" Class="mb-10" Style="font-weight: 400;">
+            Four simple steps to unlock powerful insights
+        </MudText>
+
+        <MudGrid Spacing="4">
+            @foreach (var (step, index) in GetSteps().Select((s, i) => (s, i)))
+            {
+                <MudItem xs="12" sm="6" md="3" Style="animation-delay: @((index * 150))ms;" Class="reveal-up">
+                    <MudPaper Class="step-card pa-6 text-center">
+                        <MudAvatar Color="@step.Color" Size="Size.Large" Class="step-number mb-4" Style="width: 70px; height: 70px; font-size: 2rem; font-weight: 800;">
+                            @(index + 1)
+                        </MudAvatar>
+                        <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 700;">@step.Title</MudText>
+                        <MudText Color="Color.Secondary" Style="line-height: 1.6;">@step.Description</MudText>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+    </div>
+
+    <!-- CTA Section -->
+    <MudPaper Class="cta-section text-center my-12">
+        <div Style="position: relative; z-index: 1;">
+            <MudText Typo="Typo.h2" GutterBottom="true" Style="color: white; font-weight: 900; font-family: 'Playfair Display', serif;">
+                Ready to Transform Your Videos?
+            </MudText>
+            <MudText Typo="Typo.h5" Class="mb-8" Style="color: rgba(255, 255, 255, 0.95); font-weight: 400;">
+                Join thousands of users leveraging AI-powered video intelligence
+            </MudText>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Surface" 
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.Rocket"
+                       OnClick="NavigateToUpload"
+                       Class="premium-button">
+                Get Started Now
+            </MudButton>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void NavigateToUpload() => Navigation.NavigateTo("/upload");
+    private void NavigateToDemo() => Navigation.NavigateTo("/analysis/1");
+
+    private record Feature(string Icon, string Title, string Description, Color Color);
+    private record Step(string Title, string Description, Color Color);
+
+    private List<Feature> GetFeatures() => new()
+    {
+        new(Icons.Material.Filled.Movie, "Scene Detection", "AI-powered automatic segmentation identifying key scenes and transitions with frame-level accuracy", Color.Primary),
+        new(Icons.Material.Filled.Subtitles, "Smart Transcription", "Industry-leading speech recognition with speaker diarization and timestamp precision", Color.Secondary),
+        new(Icons.Material.Filled.Search, "Intelligent Search", "Lightning-fast semantic search across all video content with context-aware results", Color.Tertiary),
+        new(Icons.Material.Filled.Timeline, "Interactive Timeline", "Cinematic timeline visualization with scene markers and jump-to navigation", Color.Info),
+        new(Icons.Material.Filled.Analytics, "Deep Analytics", "Advanced ML models analyzing sentiment, topics, and extracting actionable insights", Color.Success),
+        new(Icons.Material.Filled.Speed, "Ultra-Fast Processing", "Optimized ONNX Runtime pipeline delivering results 10x faster than competitors", Color.Warning)
+    };
+
+    private List<Step> GetSteps() => new()
+    {
+        new("Upload", "Securely upload your video with drag-and-drop simplicity", Color.Primary),
+        new("Process", "Our AI engine analyzes every frame and audio segment", Color.Secondary),
+        new("Analyze", "Explore comprehensive insights through our intuitive interface", Color.Tertiary),
+        new("Export", "Download structured data and share insights with your team", Color.Success)
+    };
+}

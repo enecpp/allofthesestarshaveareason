@@ -1,0 +1,280 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>Video Analysis Platform</PageTitle>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.15) 0%, rgba(33, 150, 243, 0.15) 100%);
+        border-radius: 16px;
+        padding: 60px 20px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(124, 77, 255, 0.1) 0%, transparent 70%);
+        animation: pulse 15s ease-in-out infinite;
+    }
+    
+    @@keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .feature-card {
+        background: rgba(30, 41, 59, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(124, 77, 255, 0.3);
+        border-color: rgba(124, 77, 255, 0.5);
+    }
+    
+    .step-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .step-card:hover {
+        border-color: rgba(124, 77, 255, 0.5);
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #7C4DFF 0%, #2196F3 100%);
+        border-radius: 16px;
+        padding: 48px;
+        box-shadow: 0 8px 32px rgba(124, 77, 255, 0.4);
+    }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <MudGrid Spacing="4" Justify="Justify.Center">
+            <MudItem xs="12" Class="text-center" Style="position: relative; z-index: 1;">
+                <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" 
+                         Size="Size.Large" 
+                         Color="Color.Primary" 
+                         Style="font-size: 6rem; filter: drop-shadow(0 4px 12px rgba(124, 77, 255, 0.5));" />
+                <MudText Typo="Typo.h2" GutterBottom="true" Class="mt-4 gradient-text" Style="font-weight: 700;">
+                    Video Analysis Platform
+                </MudText>
+                <MudText Typo="Typo.h5" Color="Color.Secondary" Class="mb-6" Style="max-width: 800px; margin: 0 auto;">
+                    Advanced AI-powered video content analysis with scene detection, transcription, and intelligent insights
+                </MudText>
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                           OnClick="NavigateToUpload"
+                           Class="mr-3 glow-on-hover"
+                           Style="padding: 12px 32px; font-size: 1rem;">
+                    Start Analyzing
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Primary" 
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.PlayArrow"
+                           OnClick="NavigateToDemo"
+                           Style="padding: 12px 32px; font-size: 1rem;">
+                    View Demo
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <!-- Features Section -->
+    <MudGrid Spacing="4" Class="mb-8">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true" Style="font-weight: 600;">
+                Powerful Features
+            </MudText>
+            <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-6">
+                Everything you need for comprehensive video analysis
+            </MudText>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="feature-card pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Movie" 
+                         Color="Color.Primary" 
+                         Size="Size.Large" 
+                         Class="mb-3" 
+                         Style="filter: drop-shadow(0 2px 8px rgba(124, 77, 255, 0.5));" />
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Scene Detection</MudText>
+                <MudText Color="Color.Secondary">
+                    Automatically identify and segment different scenes with AI-powered technology
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="feature-card pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Subtitles" 
+                         Color="Color.Secondary" 
+                         Size="Size.Large" 
+                         Class="mb-3"
+                         Style="filter: drop-shadow(0 2px 8px rgba(33, 150, 243, 0.5));" />
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Transcription</MudText>
+                <MudText Color="Color.Secondary">
+                    Generate accurate transcripts with speaker identification and timestamps
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="feature-card pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Search" 
+                         Color="Color.Tertiary" 
+                         Size="Size.Large" 
+                         Class="mb-3"
+                         Style="filter: drop-shadow(0 2px 8px rgba(0, 188, 212, 0.5));" />
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Smart Search</MudText>
+                <MudText Color="Color.Secondary">
+                    Find specific moments, topics, or keywords within your video library instantly
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="feature-card pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Timeline" 
+                         Color="Color.Info" 
+                         Size="Size.Large" 
+                         Class="mb-3"
+                         Style="filter: drop-shadow(0 2px 8px rgba(33, 150, 243, 0.5));" />
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Interactive Timeline</MudText>
+                <MudText Color="Color.Secondary">
+                    Navigate through videos with an intuitive timeline showing scene boundaries
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="feature-card pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Analytics" 
+                         Color="Color.Success" 
+                         Size="Size.Large" 
+                         Class="mb-3"
+                         Style="filter: drop-shadow(0 2px 8px rgba(76, 175, 80, 0.5));" />
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Content Analysis</MudText>
+                <MudText Color="Color.Secondary">
+                    Get detailed insights about content, topics, sentiment using advanced ML models
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="feature-card pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Speed" 
+                         Color="Color.Warning" 
+                         Size="Size.Large" 
+                         Class="mb-3"
+                         Style="filter: drop-shadow(0 2px 8px rgba(255, 152, 0, 0.5));" />
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Fast Processing</MudText>
+                <MudText Color="Color.Secondary">
+                    Powered by ONNX Runtime and optimized ML models for efficient processing
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- How It Works Section -->
+    <MudGrid Spacing="4" Class="my-12">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true" Style="font-weight: 600;">
+                How It Works
+            </MudText>
+            <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-6">
+                Get started in four simple steps
+            </MudText>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="step-card pa-4 text-center">
+                <MudAvatar Color="Color.Primary" Size="Size.Large" Class="mb-3" Style="width: 60px; height: 60px; font-size: 1.5rem;">
+                    1
+                </MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Upload</MudText>
+                <MudText Color="Color.Secondary">Upload your video file to the platform</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="step-card pa-4 text-center">
+                <MudAvatar Color="Color.Secondary" Size="Size.Large" Class="mb-3" Style="width: 60px; height: 60px; font-size: 1.5rem;">
+                    2
+                </MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Process</MudText>
+                <MudText Color="Color.Secondary">AI analyzes video content automatically</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="step-card pa-4 text-center">
+                <MudAvatar Color="Color.Tertiary" Size="Size.Large" Class="mb-3" Style="width: 60px; height: 60px; font-size: 1.5rem;">
+                    3
+                </MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Analyze</MudText>
+                <MudText Color="Color.Secondary">Review scenes, transcripts and insights</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="step-card pa-4 text-center">
+                <MudAvatar Color="Color.Success" Size="Size.Large" Class="mb-3" Style="width: 60px; height: 60px; font-size: 1.5rem;">
+                    4
+                </MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true" Style="font-weight: 600;">Export</MudText>
+                <MudText Color="Color.Secondary">Download results and share insights</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- CTA Section -->
+    <MudPaper Class="cta-section text-center my-8">
+        <MudText Typo="Typo.h3" GutterBottom="true" Style="color: white; font-weight: 700;">
+            Ready to Get Started?
+        </MudText>
+        <MudText Typo="Typo.h6" Class="mb-6" Style="color: rgba(255, 255, 255, 0.9);">
+            Upload your first video and experience the power of AI-driven analysis
+        </MudText>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Surface" 
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                   OnClick="NavigateToUpload"
+                   Style="padding: 12px 40px; font-size: 1.1rem; color: #7C4DFF; font-weight: 600;">
+            Start Analyzing Now
+        </MudButton>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void NavigateToUpload()
+    {
+        Navigation.NavigateTo("/upload");
+    }
+
+    private void NavigateToDemo()
+    {
+        Navigation.NavigateTo("/analysis/1");
+    }
+}

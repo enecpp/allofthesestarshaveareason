@@ -1,0 +1,178 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@_customTheme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Class="premium-appbar">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                       Color="Color.Inherit" 
+                       Edge="Edge.Start" 
+                       OnClick="@((e) => DrawerToggle())"
+                       Class="scale-hover" />
+        <div class="d-flex align-center">
+            <div class="logo-container float-animation">
+                <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" Size="Size.Medium" Class="mr-2" Style="filter: drop-shadow(0 2px 8px rgba(102, 126, 234, 0.6));" />
+            </div>
+            <MudText Typo="Typo.h6" Class="ml-2 text-shimmer" Style="font-weight: 700; letter-spacing: -0.5px;">
+                Video Analysis Platform
+            </MudText>
+        </div>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Notifications" 
+                       Color="Color.Inherit"
+                       Class="scale-hover pulse-glow"
+                       Style="margin-right: 8px;" />
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" 
+                       Color="Color.Inherit"
+                       Class="scale-hover" />
+    </MudAppBar>
+    
+    <MudDrawer @bind-Open="@_drawerOpen" 
+               Elevation="0"
+               Class="premium-drawer"
+               ClipMode="DrawerClipMode.Always">
+        <MudDrawerHeader Class="drawer-header border-gradient">
+            <div class="d-flex flex-column align-center" style="width: 100%; position: relative; z-index: 1;">
+                <div class="logo-circle pulse-glow" style="margin-bottom: 16px;">
+                    <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" 
+                             Size="Size.Large" 
+                             Color="Color.Primary" />
+                </div>
+                <MudText Typo="Typo.h6" Align="Align.Center" Class="gradient-text" Style="font-weight: 700;">
+                    Video Analysis
+                </MudText>
+                <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary" Style="font-weight: 500;">
+                    AI-Powered Intelligence
+                </MudText>
+            </div>
+        </MudDrawerHeader>
+        <NavMenu />
+        <MudSpacer />
+        <div class="pa-4 glass-effect" style="margin: 12px; border-radius: 12px;">
+            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary" Style="font-weight: 500;">
+                Version 1.0.0
+            </MudText>
+            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary" Class="mt-1">
+                © 2024 All Rights Reserved
+            </MudText>
+        </div>
+    </MudDrawer>
+    
+    <MudMainContent Class="main-content">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<style>
+    .premium-appbar {
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(22, 33, 62, 0.95) 100%);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(102, 126, 234, 0.1);
+    }
+    
+    .premium-drawer {
+        background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .drawer-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        padding: 32px 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .drawer-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @@keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .logo-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        transition: all 0.4s ease;
+    }
+    
+    .logo-circle:hover {
+        transform: scale(1.1) rotate(5deg);
+        border-color: rgba(102, 126, 234, 0.6);
+    }
+    
+    .logo-container {
+        position: relative;
+    }
+    
+    .logo-container::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(10px);
+    }
+    
+    .main-content {
+        background: radial-gradient(ellipse at top, rgba(26, 31, 53, 0.3) 0%, transparent 50%);
+        min-height: 100vh;
+    }
+</style>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _customTheme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#667eea",
+            Secondary = "#764ba2",
+            Tertiary = "#4facfe",
+            Success = "#00d4aa",
+            Info = "#4facfe",
+            Warning = "#ffb155",
+            Error = "#ff5555",
+            AppbarBackground = "#0F172A",
+            Background = "#0F172A",
+            Surface = "#1E293B",
+            DrawerBackground = "#1E293B",
+            DrawerText = "rgba(255,255,255,0.9)",
+            TextPrimary = "rgba(255,255,255,0.9)",
+            TextSecondary = "rgba(255,255,255,0.6)",
+            ActionDefault = "rgba(255,255,255,0.7)",
+            Divider = "rgba(255,255,255,0.08)",
+            LinesDefault = "rgba(255,255,255,0.08)"
+        }
+    };
+}

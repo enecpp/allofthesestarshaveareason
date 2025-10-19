@@ -1,0 +1,154 @@
+﻿@page "/analysis/{VideoId:int}"
+@rendermode InteractiveServer
+@using allofthesestarshaveareason.Models
+@using allofthesestarshaveareason.Components.Shared
+
+<PageTitle>Video Analysis</PageTitle>
+
+@if (analysisResult == null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudText Class="mt-2">Loading analysis...</MudText>
+}
+else
+{
+    <MudGrid Spacing="3">
+        <MudItem xs="12" md="8">
+            <MudPaper Class="pa-4" Elevation="3">
+                <VideoPlayer VideoUrl="@analysisResult.VideoUrl" @ref="videoPlayer" />
+            </MudPaper>
+            <MudPaper Class="pa-4 mt-3" Elevation="3">
+                <MudText Typo="Typo.h6" Class="mb-3">Scene Timeline</MudText>
+                <SceneTimeline Scenes="@analysisResult.Scenes" OnSceneClicked="SeekTo" />
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4" Elevation="3" Style="height: 80vh; display: flex; flex-direction: column;">
+                <MudText Typo="Typo.h6" Class="mb-3">Transcript</MudText>
+                <MudTextField @bind-Value="searchTerm" 
+                              Label="Search in transcript..." 
+                              Variant="Variant.Outlined" 
+                              Adornment="Adornment.End" 
+                              AdornmentIcon="@Icons.Material.Filled.Search" 
+                              OnAdornmentClick="SearchTranscript" 
+                              Class="mb-2" />
+                <div style="overflow-y: auto; flex-grow: 1;">
+                    <TranscriptView Segments="@filteredSegments" OnSegmentClicked="SeekTo" />
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public int VideoId { get; set; }
+
+    private Models.VideoAnalysisResult? analysisResult;
+    private IEnumerable<Models.TranscriptSegment> filteredSegments = new List<Models.TranscriptSegment>();
+    private string searchTerm = string.Empty;
+    private Shared.VideoPlayer? videoPlayer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading delay
+        await Task.Delay(500);
+        analysisResult = CreateDummyData();
+        filteredSegments = analysisResult.Transcript;
+    }
+
+    private async Task SeekTo(double timeInSeconds)
+    {
+        if (videoPlayer != null)
+        {
+            await videoPlayer.SeekToTime(timeInSeconds);
+        }
+    }
+
+    private void SearchTranscript()
+    {
+        if (analysisResult == null) return;
+
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredSegments = analysisResult.Transcript;
+        }
+        else
+        {
+            filteredSegments = analysisResult.Transcript
+                .Where(s => s.Text.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    private Models.VideoAnalysisResult CreateDummyData()
+    {
+        return new Models.VideoAnalysisResult
+        {
+            VideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            Scenes = new List<Models.Scene>
+            {
+                new Models.Scene 
+                { 
+                    Title = "Opening Scene", 
+                    StartTime = 0, 
+                    EndTime = 30, 
+                    Description = "Introduction and credits" 
+                },
+                new Models.Scene 
+                { 
+                    Title = "Main Content", 
+                    StartTime = 30, 
+                    EndTime = 120, 
+                    Description = "Main storyline" 
+                },
+                new Models.Scene 
+                { 
+                    Title = "Ending", 
+                    StartTime = 120, 
+                    EndTime = 180, 
+                    Description = "Conclusion and closing" 
+                }
+            },
+            Transcript = new List<Models.TranscriptSegment>
+            {
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 0, 
+                    EndTime = 5, 
+                    Text = "Welcome to this video analysis demonstration.", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 5, 
+                    EndTime = 10, 
+                    Text = "Today we will explore amazing content and features.", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 10, 
+                    EndTime = 15, 
+                    Text = "Let's get started with the introduction.", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 30, 
+                    EndTime = 35, 
+                    Text = "This is the main content section.", 
+                    Speaker = "Host" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 120, 
+                    EndTime = 125, 
+                    Text = "Thank you for watching!", 
+                    Speaker = "Narrator" 
+                }
+            }
+        };
+    }
+}

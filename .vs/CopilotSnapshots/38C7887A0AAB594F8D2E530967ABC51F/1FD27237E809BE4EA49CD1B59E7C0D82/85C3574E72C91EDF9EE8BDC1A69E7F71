@@ -1,0 +1,69 @@
+﻿@page "/UPLOAD"	
+@using System.Diagnostics
+@inject IHttpClientFactory HttpClientFactory
+
+
+
+<PageTitle> 
+	UPLOAD VIDEO
+</PageTitle>
+
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudText Typo="Typo.h4" GutterBottom="true">Start New Video Analyze</MudText>
+	<MudText Class="mb-4">Upload your video file to begin analysis.</MudText>
+
+	<MudFileUpload T="IBrowserFile" OnFilesChanged="OnFilesChanged" Accept=".mp4, .mkv">
+		<ButtonTemplate>
+			<MudButton HtmlTag="label"
+				       Variant="Variant.Filled"
+					   Color="Color.Primary"
+					   StartIcon="@Icons.Material.Filled.CloudUpload"
+					   for="@context">
+
+				Upload Video File
+			</MudButton>
+		</ButtonTemplate>
+@if (isUploading)
+		{
+			<MudProgressLinear Color="Color.Primary" Value="uploadPercantage" Class ="my-4" />
+			<MudText>@uploadMessage</MudText>
+		}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+		{
+			<MudAlert Severity="Severity.Error" Class="my-4">@errorMessage</MudAlert>
+		}
+	</MudFileUpload>)
+</MudContainer>
+
+
+@code {
+	private bool isUploading = false;
+	private int UploadPercantage = 0;
+	private string UploadMessage = "";
+	private string errorMessage = "";
+	private long maxFileSize = 1024L * 1024 * 1024 * 5; 
+
+	private async Task OnFilesChanged(IBrowserFile file)
+	{
+		if (file == null) return;
+
+		isUploading = true;	
+		errorMessage = "";
+		uploadMessage = $"{file.Name} Uploading...";	
+		STateHasChanged();
+
+	
+	}
+	
+	
+	try 
+	{
+		var client = HttpClientFactory.CreateClient();
+		using var content = new MultipartFormDataContent();
+
+	}
+
+
+}

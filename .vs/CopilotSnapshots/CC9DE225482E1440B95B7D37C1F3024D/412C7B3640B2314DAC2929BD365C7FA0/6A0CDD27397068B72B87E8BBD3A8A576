@@ -1,0 +1,201 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@_customTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="3" Dense="false">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                       Color="Color.Inherit" 
+                       Edge="Edge.Start" 
+                       OnClick="@((e) => DrawerToggle())" />
+        <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" Size="Size.Medium" Class="mr-2" />
+        <MudText Typo="Typo.h6" Class="ml-2">Video Analysis Platform</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.GitHub" 
+                       Color="Color.Inherit" 
+                       Href="https://github.com" 
+                       Target="_blank" />
+    </MudAppBar>
+    
+    <MudDrawer @bind-Open="@_drawerOpen" 
+               Elevation="2" 
+               ClipMode="DrawerClipMode.Always">
+        <MudDrawerHeader Class="drawer-header">
+            <div class="d-flex flex-column align-center" style="width: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" 
+                         Size="Size.Large" 
+                         Color="Color.Primary" 
+                         Class="mb-2" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Video Analysis</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">AI-Powered Platform</MudText>
+            </div>
+        </MudDrawerHeader>
+        <NavMenu />
+        <MudSpacer />
+        <div class="pa-4" style="margin-top: auto;">
+            <MudDivider Class="mb-3" />
+            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary">
+                v1.0.0 © 2024
+            </MudText>
+        </div>
+    </MudDrawer>
+    
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<style>
+    .drawer-header {
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+        padding: 24px 16px;
+    }
+</style>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _customTheme = new MudTheme()
+    {
+        Palette = new PaletteLight()
+        {
+            Primary = "#7C4DFF",
+            Secondary = "#2196F3",
+            Tertiary = "#00BCD4",
+            Success = "#4CAF50",
+            Info = "#2196F3",
+            Warning = "#FF9800",
+            Error = "#F44336",
+            Dark = "#1A1A2E",
+            AppbarBackground = "#16213E",
+            Background = "#0F172A",
+            Surface = "#1E293B",
+            DrawerBackground = "#1E293B",
+            DrawerText = "rgba(255,255,255,0.87)",
+            DrawerIcon = "rgba(255,255,255,0.7)",
+            TextPrimary = "rgba(255,255,255,0.87)",
+            TextSecondary = "rgba(255,255,255,0.6)",
+            ActionDefault = "rgba(255,255,255,0.7)",
+            ActionDisabled = "rgba(255,255,255,0.3)",
+            ActionDisabledBackground = "rgba(255,255,255,0.12)",
+            Divider = "rgba(255,255,255,0.12)",
+            DividerLight = "rgba(255,255,255,0.06)",
+            TableLines = "rgba(255,255,255,0.12)",
+            LinesDefault = "rgba(255,255,255,0.12)",
+            LinesInputs = "rgba(255,255,255,0.3)",
+            TextDisabled = "rgba(255,255,255,0.38)"
+        },
+        Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "0.875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = "0.01071em"
+            },
+            H1 = new H1()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "6rem",
+                FontWeight = 300,
+                LineHeight = 1.167,
+                LetterSpacing = "-0.01562em"
+            },
+            H2 = new H2()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "3.75rem",
+                FontWeight = 300,
+                LineHeight = 1.2,
+                LetterSpacing = "-0.00833em"
+            },
+            H3 = new H3()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "3rem",
+                FontWeight = 400,
+                LineHeight = 1.167,
+                LetterSpacing = "0em"
+            },
+            H4 = new H4()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "2.125rem",
+                FontWeight = 400,
+                LineHeight = 1.235,
+                LetterSpacing = "0.00735em"
+            },
+            H5 = new H5()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1.5rem",
+                FontWeight = 400,
+                LineHeight = 1.334,
+                LetterSpacing = "0em"
+            },
+            H6 = new H6()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1.25rem",
+                FontWeight = 500,
+                LineHeight = 1.6,
+                LetterSpacing = "0.0075em"
+            },
+            Button = new Button()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "0.875rem",
+                FontWeight = 500,
+                LineHeight = 1.75,
+                LetterSpacing = "0.02857em",
+                TextTransform = "uppercase"
+            }
+        },
+        Shadows = new Shadow()
+        {
+            Elevation = new string[]
+            {
+                "none",
+                "0 2px 4px -1px rgba(0,0,0,0.2),0 4px 5px 0 rgba(0,0,0,0.14),0 1px 10px 0 rgba(0,0,0,0.12)",
+                "0 3px 5px -1px rgba(0,0,0,0.2),0 6px 10px 0 rgba(0,0,0,0.14),0 1px 18px 0 rgba(0,0,0,0.12)",
+                "0 3px 5px -1px rgba(0,0,0,0.2),0 5px 8px 0 rgba(0,0,0,0.14),0 1px 14px 0 rgba(0,0,0,0.12)",
+                "0 2px 4px -1px rgba(0,0,0,0.2),0 4px 5px 0 rgba(0,0,0,0.14),0 1px 10px 0 rgba(0,0,0,0.12)",
+                "0 3px 5px -1px rgba(0,0,0,0.2),0 5px 8px 0 rgba(0,0,0,0.14),0 1px 14px 0 rgba(0,0,0,0.12)",
+                "0 3px 5px -1px rgba(0,0,0,0.2),0 6px 10px 0 rgba(0,0,0,0.14),0 1px 18px 0 rgba(0,0,0,0.12)",
+                "0 4px 5px -2px rgba(0,0,0,0.2),0 7px 10px 1px rgba(0,0,0,0.14),0 2px 16px 1px rgba(0,0,0,0.12)",
+                "0 5px 5px -3px rgba(0,0,0,0.2),0 8px 10px 1px rgba(0,0,0,0.14),0 3px 14px 2px rgba(0,0,0,0.12)",
+                "0 5px 6px -3px rgba(0,0,0,0.2),0 9px 12px 1px rgba(0,0,0,0.14),0 3px 16px 2px rgba(0,0,0,0.12)",
+                "0 6px 6px -3px rgba(0,0,0,0.2),0 10px 14px 1px rgba(0,0,0,0.14),0 4px 18px 3px rgba(0,0,0,0.12)",
+                "0 6px 7px -4px rgba(0,0,0,0.2),0 11px 15px 1px rgba(0,0,0,0.14),0 4px 20px 3px rgba(0,0,0,0.12)",
+                "0 7px 8px -4px rgba(0,0,0,0.2),0 12px 17px 2px rgba(0,0,0,0.14),0 5px 22px 4px rgba(0,0,0,0.12)",
+                "0 7px 8px -4px rgba(0,0,0,0.2),0 13px 19px 2px rgba(0,0,0,0.14),0 5px 24px 4px rgba(0,0,0,0.12)",
+                "0 7px 9px -4px rgba(0,0,0,0.2),0 14px 21px 2px rgba(0,0,0,0.14),0 5px 26px 4px rgba(0,0,0,0.12)",
+                "0 8px 9px -5px rgba(0,0,0,0.2),0 15px 22px 2px rgba(0,0,0,0.14),0 6px 28px 5px rgba(0,0,0,0.12)",
+                "0 8px 10px -5px rgba(0,0,0,0.2),0 16px 24px 2px rgba(0,0,0,0.14),0 6px 30px 5px rgba(0,0,0,0.12)",
+                "0 8px 11px -5px rgba(0,0,0,0.2),0 17px 26px 2px rgba(0,0,0,0.14),0 6px 32px 5px rgba(0,0,0,0.12)",
+                "0 9px 11px -5px rgba(0,0,0,0.2),0 18px 28px 2px rgba(0,0,0,0.14),0 7px 34px 6px rgba(0,0,0,0.12)",
+                "0 9px 12px -6px rgba(0,0,0,0.2),0 19px 29px 2px rgba(0,0,0,0.14),0 7px 36px 6px rgba(0,0,0,0.12)",
+                "0 10px 13px -6px rgba(0,0,0,0.2),0 20px 31px 3px rgba(0,0,0,0.14),0 8px 38px 7px rgba(0,0,0,0.12)",
+                "0 10px 13px -6px rgba(0,0,0,0.2),0 21px 33px 3px rgba(0,0,0,0.14),0 8px 40px 7px rgba(0,0,0,0.12)",
+                "0 10px 14px -6px rgba(0,0,0,0.2),0 22px 35px 3px rgba(0,0,0,0.14),0 8px 42px 7px rgba(0,0,0,0.12)",
+                "0 11px 14px -7px rgba(0,0,0,0.2),0 23px 36px 3px rgba(0,0,0,0.14),0 9px 44px 8px rgba(0,0,0,0.12)",
+                "0 11px 15px -7px rgba(0,0,0,0.2),0 24px 38px 3px rgba(0,0,0,0.14),0 9px 46px 8px rgba(0,0,0,0.12)"
+            }
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DefaultBorderRadius = "8px"
+        }
+    };
+}

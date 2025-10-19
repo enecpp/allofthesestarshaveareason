@@ -1,0 +1,94 @@
+﻿@page "/upload"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Upload Video</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudText Typo="Typo.h4" GutterBottom="true">Start New Video Analysis</MudText>
+    <MudText Class="mb-4">Upload your video file to begin analysis.</MudText>
+
+    <MudPaper Class="pa-4" Elevation="2">
+        <MudFileUpload T="IBrowserFile" FilesChanged="OnFilesChanged" Accept=".mp4,.mkv,.avi,.mov">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                           Disabled="@isUploading">
+                    Upload Video File
+                </MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+
+        @if (isUploading)
+        {
+            <MudProgressLinear Color="Color.Primary" Value="@uploadPercentage" Class="my-4" />
+            <MudText>@uploadMessage</MudText>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="my-4">@errorMessage</MudAlert>
+        }
+        
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <MudAlert Severity="Severity.Success" Class="my-4">@successMessage</MudAlert>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool isUploading = false;
+    private int uploadPercentage = 0;
+    private string uploadMessage = "";
+    private string errorMessage = "";
+    private string successMessage = "";
+
+    private async Task OnFilesChanged(IBrowserFile file)
+    {
+        if (file == null) return;
+
+        const long maxFileSize = 1024L * 1024 * 1024 * 5; // 5GB
+
+        isUploading = true;
+        errorMessage = "";
+        successMessage = "";
+        uploadMessage = $"Uploading {file.Name}...";
+        uploadPercentage = 0;
+        StateHasChanged();
+
+        try
+        {
+            // Simulate upload progress
+            for (int i = 0; i <= 100; i += 10)
+            {
+                uploadPercentage = i;
+                await Task.Delay(200);
+                StateHasChanged();
+            }
+
+            successMessage = $"File '{file.Name}' uploaded successfully!";
+            uploadMessage = "";
+            
+            // TODO: Implement actual API call when backend is ready
+            // var client = HttpClientFactory.CreateClient();
+            // using var content = new MultipartFormDataContent();
+            // var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+            // content.Add(fileContent, "file", file.Name);
+            // var response = await client.PostAsync("api/upload", content);
+            // response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Upload failed: {ex.Message}";
+            uploadMessage = "";
+        }
+        finally
+        {
+            isUploading = false;
+            uploadPercentage = 0;
+            StateHasChanged();
+        }
+    }
+}

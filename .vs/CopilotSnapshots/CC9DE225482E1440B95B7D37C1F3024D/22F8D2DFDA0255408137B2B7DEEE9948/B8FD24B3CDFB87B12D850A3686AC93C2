@@ -1,0 +1,44 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="/" 
+                Match="NavLinkMatch.All" 
+                Icon="@Icons.Material.Filled.Home"
+                IconColor="Color.Primary">
+        Home
+    </MudNavLink>
+    
+    <MudDivider Class="my-3" />
+    
+    <MudText Typo="Typo.caption" Class="px-4 mb-2" Color="Color.Secondary">
+        VIDEO MANAGEMENT
+    </MudText>
+    
+    <MudNavLink Href="/upload" 
+                Icon="@Icons.Material.Filled.CloudUpload"
+                IconColor="Color.Secondary">
+        Upload Video
+    </MudNavLink>
+    
+    <MudNavLink Href="/analysis/1" 
+                Icon="@Icons.Material.Filled.VideoLibrary"
+                IconColor="Color.Tertiary">
+        Analysis Demo
+    </MudNavLink>
+</MudNavMenu>
+
+<style>
+    .mud-nav-link {
+        border-radius: 8px;
+        margin: 4px 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .mud-nav-link:hover {
+        background-color: rgba(124, 77, 255, 0.1);
+    }
+    
+    .mud-nav-link.active {
+        background: linear-gradient(90deg, rgba(124, 77, 255, 0.2) 0%, transparent 100%);
+        border-left: 3px solid #7C4DFF;
+    }
+</style>
+

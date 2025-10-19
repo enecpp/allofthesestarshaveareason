@@ -1,0 +1,31 @@
+﻿@using allofthesestarshaveareason.Models
+
+<MudTimeline TimelineOrientation="TimelineOrientation.Horizontal">
+    @foreach (var scene in Scenes)
+    {
+        <MudTimelineItem Color="Color.Primary">
+            <ItemContent>
+                <MudButton Variant="Variant.Text" OnClick="@(() => OnSceneClicked.InvokeAsync(scene.StartTime))">
+                    <div>
+                        <MudText Typo="Typo.body2">@FormatTime(scene.StartTime)</MudText>
+                        <MudText Typo="Typo.subtitle2">@scene.Title</MudText>
+                    </div>
+                </MudButton>
+            </ItemContent>
+        </MudTimelineItem>
+    }
+</MudTimeline>
+
+@code {
+    [Parameter]
+    public List<Scene> Scenes { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<double> OnSceneClicked { get; set; }
+
+    private string FormatTime(double seconds)
+    {
+        var ts = TimeSpan.FromSeconds(seconds);
+        return ts.ToString(@"mm\:ss");
+    }
+}

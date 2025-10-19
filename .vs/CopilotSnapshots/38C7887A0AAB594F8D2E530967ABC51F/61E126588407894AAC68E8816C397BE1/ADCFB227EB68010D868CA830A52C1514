@@ -1,0 +1,79 @@
+﻿@page "/UPLOAD"	
+@using System.Diagnostics
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle> 
+	UPLOAD VIDEO
+</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudText Typo="Typo.h4" GutterBottom="true">Start New Video Analyze</MudText>
+	<MudText Class="mb-4">Upload your video file to begin analysis.</MudText>
+
+	<MudFileUpload T="IBrowserFile" FilesChanged="OnFilesChanged" Accept=".mp4, .mkv">
+		<ActivatorContent>
+			<MudButton Variant="MudBlazor.Variant.Filled"
+					   Color="Color.Primary"
+					   StartIcon="@Icons.Material.Filled.CloudUpload">
+				Upload Video File
+			</MudButton>
+		</ActivatorContent>
+	</MudFileUpload>
+
+	@if (isUploading)
+	{
+		<MudProgressLinear Color="Color.Primary" Value="uploadPercentage" Class="my-4" />
+		<MudText>@uploadMessage</MudText>
+	}
+
+	@if (!string.IsNullOrEmpty(errorMessage))
+	{
+		<MudAlert Severity="Severity.Error" Class="my-4">@errorMessage</MudAlert>
+	}
+</MudContainer>
+
+@code {
+	private bool isUploading = false;
+	private int uploadPercentage = 0;
+	private string uploadMessage = "";
+	private string errorMessage = "";
+	private long maxFileSize = 1024L * 1024 * 1024 * 5; 
+
+	private async Task OnFilesChanged(IBrowserFile file)
+	{
+		if (file == null) return;
+
+		isUploading = true;	
+		errorMessage = "";
+		uploadMessage = $"{file.Name} Uploading...";	
+		StateHasChanged();
+
+		try 
+		{
+			var client = HttpClientFactory.CreateClient();
+			using var content = new MultipartFormDataContent();
+			
+			var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+			content.Add(fileContent, "file", file.Name);
+			
+			// Simulated delay to show progress
+			await Task.Delay(1000);
+			
+			// TODO: Uncomment when API endpoint is ready
+			// var response = await client.PostAsync("api/upload", content);
+			// response.EnsureSuccessStatusCode();
+			
+			uploadMessage = "Upload completed!";
+			uploadPercentage = 100;
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"Error: {ex.Message}";
+		}
+		finally
+		{
+			isUploading = false;
+			StateHasChanged();
+		}
+	}
+}

@@ -1,0 +1,90 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@_customTheme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="3" Dense="false">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                       Color="Color.Inherit" 
+                       Edge="Edge.Start" 
+                       OnClick="@((e) => DrawerToggle())" />
+        <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" Size="Size.Medium" Class="mr-2" />
+        <MudText Typo="Typo.h6" Class="ml-2">Video Analysis Platform</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Info" 
+                       Color="Color.Inherit" 
+                       Href="https://github.com" 
+                       Target="_blank" />
+    </MudAppBar>
+    
+    <MudDrawer @bind-Open="@_drawerOpen" 
+               Elevation="2" 
+               ClipMode="DrawerClipMode.Always">
+        <MudDrawerHeader Class="drawer-header">
+            <div class="d-flex flex-column align-center" style="width: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" 
+                         Size="Size.Large" 
+                         Color="Color.Primary" 
+                         Class="mb-2" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Video Analysis</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">AI-Powered Platform</MudText>
+            </div>
+        </MudDrawerHeader>
+        <NavMenu />
+        <MudSpacer />
+        <div class="pa-4" style="margin-top: auto;">
+            <MudDivider Class="mb-3" />
+            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary">
+                v1.0.0 © 2024
+            </MudText>
+        </div>
+    </MudDrawer>
+    
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<style>
+    .drawer-header {
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+        padding: 24px 16px;
+    }
+</style>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _customTheme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#7C4DFF",
+            Secondary = "#2196F3",
+            Tertiary = "#00BCD4",
+            Success = "#4CAF50",
+            Info = "#2196F3",
+            Warning = "#FF9800",
+            Error = "#F44336",
+            AppbarBackground = "#16213E",
+            Background = "#0F172A",
+            Surface = "#1E293B",
+            DrawerBackground = "#1E293B",
+            DrawerText = "rgba(255,255,255,0.87)",
+            TextPrimary = "rgba(255,255,255,0.87)",
+            TextSecondary = "rgba(255,255,255,0.6)",
+            ActionDefault = "rgba(255,255,255,0.7)",
+            Divider = "rgba(255,255,255,0.12)",
+            LinesDefault = "rgba(255,255,255,0.12)"
+        }
+    };
+}

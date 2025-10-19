@@ -1,0 +1,96 @@
+﻿@page "/analysis/{VideoId:int}"
+@rendermode InteractiveServer
+
+<PageTitle>Analysis Results</PageTitle>
+
+@if (analysisResult == null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudGrid Spacing="3">
+        <MudItem xs="12" md="8">
+            <MudPaper Class="pa-4" Elevation="3">
+                <VideoPlayer VideoUrl="@analysisResult.VideoUrl" @ref="videoPlayer" />
+            </MudPaper>
+            <MudPaper Class="pa-4 mt-3" Elevation="3">
+                <SceneTimeline Scenes="@analysisResult.Scenes" OnSceneClicked="SeekTo" />
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4" Elevation="3" Style="height: 80vh; display: flex; flex-direction: column;">
+                <MudTextField @bind-Value="searchTerm" 
+                              Label="Search in transcript..." 
+                              Variant="Variant.Outlined" 
+                              Adornment="Adornment.End" 
+                              AdornmentIcon="@Icons.Material.Filled.Search" 
+                              OnAdornmentClick="SearchTranscript" />
+                <div style="overflow-y: auto; flex-grow: 1; margin-top: 10px;">
+                    <TranscriptView Segments="@filteredSegments" OnSegmentClicked="SeekTo" />
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public int VideoId { get; set; }
+
+    private VideoAnalysisResult? analysisResult;
+    private IEnumerable<TranscriptSegment> filteredSegments = Enumerable.Empty<TranscriptSegment>();
+    private string searchTerm = string.Empty;
+    private VideoPlayer? videoPlayer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        analysisResult = GetDummyData();
+        filteredSegments = analysisResult.Transcript;
+        await Task.CompletedTask;
+    }
+
+    private async Task SeekTo(double timeInSeconds)
+    {
+        if (videoPlayer != null)
+        {
+            await videoPlayer.SeekToTime(timeInSeconds);
+        }
+    }
+
+    private void SearchTranscript()
+    {
+        if (analysisResult == null) return;
+
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredSegments = analysisResult.Transcript;
+        }
+        else
+        {
+            filteredSegments = analysisResult.Transcript
+                .Where(s => s.Text.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    private VideoAnalysisResult GetDummyData()
+    {
+        return new VideoAnalysisResult
+        {
+            VideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            Scenes = new List<Scene>
+            {
+                new Scene { Title = "Opening", StartTime = 0, EndTime = 30, Description = "Introduction scene" },
+                new Scene { Title = "Main Content", StartTime = 30, EndTime = 120, Description = "Main part of the video" },
+                new Scene { Title = "Ending", StartTime = 120, EndTime = 180, Description = "Conclusion" }
+            },
+            Transcript = new List<TranscriptSegment>
+            {
+                new TranscriptSegment { StartTime = 0, EndTime = 5, Text = "Welcome to this video analysis.", Speaker = "Narrator" },
+                new TranscriptSegment { StartTime = 5, EndTime = 10, Text = "Today we will explore amazing content.", Speaker = "Narrator" },
+                new TranscriptSegment { StartTime = 10, EndTime = 15, Text = "Let's get started with the introduction.", Speaker = "Narrator" }
+            }
+        };
+    }
+}

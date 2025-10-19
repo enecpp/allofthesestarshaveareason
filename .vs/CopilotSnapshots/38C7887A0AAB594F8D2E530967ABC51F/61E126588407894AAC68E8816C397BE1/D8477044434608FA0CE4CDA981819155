@@ -1,0 +1,19 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<video @ref="videoElement" controls style="width: 100%; height: auto;">
+    <source src="@VideoUrl" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+
+@code {
+    [Parameter]
+    public string VideoUrl { get; set; } = string.Empty;
+
+    private ElementReference videoElement;
+
+    public async Task SeekToTime(double timeInSeconds)
+    {
+        await JS.InvokeVoidAsync("eval", $"document.querySelector('video').currentTime = {timeInSeconds}");
+    }
+}

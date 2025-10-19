@@ -1,0 +1,164 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>Video Analysis Platform</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <!-- Hero Section -->
+    <MudGrid Spacing="4" Justify="Justify.Center">
+        <MudItem xs="12" md="8" Class="text-center">
+            <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" Size="Size.Large" Color="Color.Primary" Style="font-size: 5rem;" />
+            <MudText Typo="Typo.h2" GutterBottom="true" Class="mt-4">Video Analysis Platform</MudText>
+            <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mb-6">
+                Advanced AI-powered video content analysis with scene detection, transcription, and intelligent insights
+            </MudText>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                       OnClick="NavigateToUpload"
+                       Class="mr-2">
+                Upload Video
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" 
+                       Color="Color.Primary" 
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.PlayArrow"
+                       OnClick="NavigateToDemo">
+                View Demo
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Features Section -->
+    <MudGrid Spacing="4" Class="mt-12">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Key Features</MudText>
+        </MudItem>
+        
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6" Elevation="2" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Movie" Color="Color.Primary" Size="Size.Large" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Scene Detection</MudText>
+                <MudText>
+                    Automatically identify and segment different scenes in your videos with AI-powered scene detection technology.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6" Elevation="2" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Subtitles" Color="Color.Secondary" Size="Size.Large" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Transcription</MudText>
+                <MudText>
+                    Generate accurate transcripts with speaker identification and timestamps for easy navigation and searchability.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6" Elevation="2" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Search" Color="Color.Tertiary" Size="Size.Large" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Smart Search</MudText>
+                <MudText>
+                    Search through video content instantly. Find specific moments, topics, or keywords within your video library.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6" Elevation="2" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Timeline" Color="Color.Info" Size="Size.Large" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Interactive Timeline</MudText>
+                <MudText>
+                    Navigate through your video with an intuitive timeline showing scene boundaries and key moments.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6" Elevation="2" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Analytics" Color="Color.Success" Size="Size.Large" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Content Analysis</MudText>
+                <MudText>
+                    Get detailed insights about video content, topics, sentiment, and key themes using advanced ML models.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-6" Elevation="2" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Speed" Color="Color.Warning" Size="Size.Large" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Fast Processing</MudText>
+                <MudText>
+                    Powered by ONNX Runtime and optimized ML models for fast and efficient video processing.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- How It Works Section -->
+    <MudGrid Spacing="4" Class="mt-12 mb-8">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">How It Works</MudText>
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+            <MudPaper Class="pa-4 text-center" Elevation="1">
+                <MudAvatar Color="Color.Primary" Size="Size.Large" Class="mb-3">1</MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true">Upload</MudText>
+                <MudText>Upload your video file to the platform</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+            <MudPaper Class="pa-4 text-center" Elevation="1">
+                <MudAvatar Color="Color.Secondary" Size="Size.Large" Class="mb-3">2</MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true">Process</MudText>
+                <MudText>AI analyzes video content automatically</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+            <MudPaper Class="pa-4 text-center" Elevation="1">
+                <MudAvatar Color="Color.Tertiary" Size="Size.Large" Class="mb-3">3</MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true">Analyze</MudText>
+                <MudText>Review scenes, transcripts, and insights</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+            <MudPaper Class="pa-4 text-center" Elevation="1">
+                <MudAvatar Color="Color.Success" Size="Size.Large" Class="mb-3">4</MudAvatar>
+                <MudText Typo="Typo.h6" GutterBottom="true">Export</MudText>
+                <MudText>Download results and share insights</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- CTA Section -->
+    <MudPaper Class="pa-8 mt-8 mb-8 text-center" Elevation="3">
+        <MudText Typo="Typo.h4" GutterBottom="true">Ready to Get Started?</MudText>
+        <MudText Class="mb-4">Upload your first video and experience the power of AI-driven video analysis</MudText>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                   OnClick="NavigateToUpload">
+            Start Analyzing Now
+        </MudButton>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void NavigateToUpload()
+    {
+        Navigation.NavigateTo("/upload");
+    }
+
+    private void NavigateToDemo()
+    {
+        Navigation.NavigateTo("/analysis/1");
+    }
+}

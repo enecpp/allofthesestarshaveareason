@@ -1,0 +1,126 @@
+﻿<MudNavMenu Class="premium-nav">
+    <MudNavLink Href="/" 
+                Match="NavLinkMatch.All" 
+                Icon="@Icons.Material.Filled.Home"
+                IconColor="Color.Primary"
+                Class="nav-item reveal-up">
+        <span class="nav-text">Home</span>
+    </MudNavLink>
+    
+    <MudDivider Class="my-4" Style="opacity: 0.3;" />
+    
+    <MudText Typo="Typo.caption" Class="px-4 mb-3" Color="Color.Secondary" Style="font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+        Video Management
+    </MudText>
+    
+    <MudNavLink Href="/upload" 
+                Icon="@Icons.Material.Filled.CloudUpload"
+                IconColor="Color.Secondary"
+                Class="nav-item reveal-up">
+        <span class="nav-text">Upload Video</span>
+    </MudNavLink>
+    
+    <MudNavLink Href="/analysis/1" 
+                Icon="@Icons.Material.Filled.VideoLibrary"
+                IconColor="Color.Tertiary"
+                Class="nav-item reveal-up">
+        <span class="nav-text">Analysis Demo</span>
+    </MudNavLink>
+</MudNavMenu>
+
+<style>
+    .premium-nav {
+        padding: 12px 0;
+    }
+    
+    .nav-item {
+        margin: 6px 12px;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        background: transparent;
+    }
+    
+    .nav-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .nav-item:hover::before {
+        left: 100%;
+    }
+    
+    .nav-item:hover {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
+        transform: translateX(4px);
+        box-shadow: 
+            4px 0 0 0 rgba(102, 126, 234, 0.8) inset,
+            0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    
+    .nav-item.active {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.15) 100%);
+        border-left: 4px solid #667eea;
+        box-shadow: 
+            0 4px 16px rgba(102, 126, 234, 0.3),
+            0 0 20px rgba(102, 126, 234, 0.1) inset;
+    }
+    
+    .nav-item.active::after {
+        content: '';
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6px;
+        height: 6px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            opacity: 0.6;
+            transform: translateY(-50%) scale(1.2);
+        }
+    }
+    
+    .nav-text {
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .nav-item:hover .nav-text {
+        color: rgba(255, 255, 255, 0.95);
+    }
+    
+    .nav-item.active .nav-text {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 1);
+    }
+    
+    /* Icon glow effect */
+    .nav-item:hover .mud-icon-root {
+        filter: drop-shadow(0 0 8px currentColor);
+    }
+    
+    .nav-item.active .mud-icon-root {
+        filter: drop-shadow(0 0 12px currentColor);
+    }
+</style>
+
