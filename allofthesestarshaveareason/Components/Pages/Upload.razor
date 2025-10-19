@@ -1,0 +1,178 @@
+﻿@page "/upload"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Upload Video</PageTitle>
+
+<style>
+    .upload-container {
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+        border-radius: 16px;
+        padding: 48px;
+        border: 2px dashed rgba(124, 77, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .upload-container:hover {
+        border-color: rgba(124, 77, 255, 0.6);
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.15) 0%, rgba(33, 150, 243, 0.15) 100%);
+    }
+    
+    .upload-icon-container {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @@keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true" Class="gradient-text" Style="font-weight: 700;">
+        Upload Video
+    </MudText>
+    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-6">
+        Upload your video file to begin AI-powered analysis
+    </MudText>
+
+    <MudPaper Class="upload-container" Elevation="0">
+        <div class="text-center mb-4">
+            <div class="upload-icon-container">
+                <MudIcon Icon="@Icons.Material.Filled.CloudUpload" 
+                         Color="Color.Primary" 
+                         Style="font-size: 5rem; filter: drop-shadow(0 4px 12px rgba(124, 77, 255, 0.5));" />
+            </div>
+        </div>
+        
+        <MudFileUpload T="IBrowserFile" FilesChanged="OnFilesChanged" Accept=".mp4,.mkv,.avi,.mov">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.FileUpload"
+                           Disabled="@isUploading"
+                           FullWidth="true"
+                           Class="glow-on-hover"
+                           Style="padding: 16px; font-size: 1.1rem;">
+                    Choose Video File
+                </MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+        
+        <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Secondary" Class="mt-3">
+            Supported formats: MP4, MKV, AVI, MOV (Max 5GB)
+        </MudText>
+
+        @if (isUploading)
+        {
+            <MudPaper Class="pa-4 mt-4" Elevation="2" Style="background: rgba(30, 41, 59, 0.6);">
+                <MudText Typo="Typo.body2" Class="mb-2">@uploadMessage</MudText>
+                <MudProgressLinear Color="Color.Primary" 
+                                   Value="@uploadPercentage" 
+                                   Size="Size.Medium"
+                                   Rounded="true" />
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-2">
+                    @uploadPercentage% Complete
+                </MudText>
+            </MudPaper>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mt-4" Variant="Variant.Filled" Icon="@Icons.Material.Filled.Error">
+                @errorMessage
+            </MudAlert>
+        }
+        
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <MudAlert Severity="Severity.Success" Class="mt-4" Variant="Variant.Filled" Icon="@Icons.Material.Filled.CheckCircle">
+                @successMessage
+            </MudAlert>
+        }
+    </MudPaper>
+    
+    <!-- Info Cards -->
+    <MudGrid Spacing="3" Class="mt-6">
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4 glass-effect" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.Security" Color="Color.Success" Class="mb-2" />
+                <MudText Typo="Typo.subtitle2" Style="font-weight: 600;">Secure Upload</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Your videos are encrypted and stored securely</MudText>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4 glass-effect" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.Speed" Color="Color.Info" Class="mb-2" />
+                <MudText Typo="Typo.subtitle2" Style="font-weight: 600;">Fast Processing</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">AI analysis completes in minutes</MudText>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4 glass-effect" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.HighQuality" Color="Color.Warning" Class="mb-2" />
+                <MudText Typo="Typo.subtitle2" Style="font-weight: 600;">High Accuracy</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Advanced ML models for precise results</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private bool isUploading = false;
+    private int uploadPercentage = 0;
+    private string uploadMessage = "";
+    private string errorMessage = "";
+    private string successMessage = "";
+
+    private async Task OnFilesChanged(IBrowserFile file)
+    {
+        if (file == null) return;
+
+        const long maxFileSize = 1024L * 1024 * 1024 * 5; // 5GB
+
+        isUploading = true;
+        errorMessage = "";
+        successMessage = "";
+        uploadMessage = $"Uploading {file.Name}...";
+        uploadPercentage = 0;
+        StateHasChanged();
+
+        try
+        {
+            // Simulate upload progress
+            for (int i = 0; i <= 100; i += 10)
+            {
+                uploadPercentage = i;
+                uploadMessage = i < 100 ? $"Uploading {file.Name}... {i}%" : "Processing video...";
+                await Task.Delay(200);
+                StateHasChanged();
+            }
+
+            successMessage = $"✓ File '{file.Name}' uploaded successfully! Analysis will begin shortly.";
+            uploadMessage = "";
+            
+            // TODO: Implement actual API call when backend is ready
+            // var client = HttpClientFactory.CreateClient();
+            // using var content = new MultipartFormDataContent();
+            // var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+            // content.Add(fileContent, "file", file.Name);
+            // var response = await client.PostAsync("api/upload", content);
+            // response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Upload failed: {ex.Message}";
+            uploadMessage = "";
+        }
+        finally
+        {
+            isUploading = false;
+            uploadPercentage = 0;
+            StateHasChanged();
+        }
+    }
+}

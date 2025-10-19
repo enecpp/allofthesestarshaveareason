@@ -1,0 +1,34 @@
+@using allofthesestarshaveareason.Models
+
+<MudList T="string">
+    @foreach (var segment in Segments)
+    {
+        <MudListItem T="string" OnClick="@(() => OnSegmentClicked.InvokeAsync(segment.StartTime))">
+            <div>
+                <MudText Typo="Typo.body2" Color="Color.Primary">
+                    [@FormatTime(segment.StartTime) - @FormatTime(segment.EndTime)]
+                    @if (!string.IsNullOrEmpty(segment.Speaker))
+                    {
+                        <strong>@segment.Speaker:</strong>
+                    }
+                </MudText>
+                <MudText Typo="Typo.body1">@segment.Text</MudText>
+            </div>
+        </MudListItem>
+        <MudDivider />
+    }
+</MudList>
+
+@code {
+    [Parameter]
+    public IEnumerable<TranscriptSegment> Segments { get; set; } = Enumerable.Empty<TranscriptSegment>();
+
+    [Parameter]
+    public EventCallback<double> OnSegmentClicked { get; set; }
+
+    private string FormatTime(double seconds)
+    {
+        var ts = TimeSpan.FromSeconds(seconds);
+        return ts.ToString(@"mm\:ss");
+    }
+}

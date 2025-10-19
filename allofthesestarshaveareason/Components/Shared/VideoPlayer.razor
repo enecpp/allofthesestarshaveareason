@@ -1,0 +1,19 @@
+<video controls style="width: 100%; height: auto;" id="@videoId">
+    <source src="@VideoUrl" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+
+@code {
+    [Parameter]
+    public string VideoUrl { get; set; } = string.Empty;
+
+    private string videoId = $"video-{Guid.NewGuid():N}";
+
+    // Not: JS olmadan video seek iþlevi çalýþmaz
+    // Kullanýcý manuel olarak video kontrollerini kullanabilir
+    public Task SeekToTime(double timeInSeconds)
+    {
+        // JS olmadan bu iþlev pasif
+        return Task.CompletedTask;
+    }
+}

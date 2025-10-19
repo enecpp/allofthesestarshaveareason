@@ -1,0 +1,293 @@
+@page "/analysis/{VideoId:int}"
+@rendermode InteractiveServer
+@using allofthesestarshaveareason.Models
+@using allofthesestarshaveareason.Components.Shared
+
+<PageTitle>Video Analysis</PageTitle>
+
+<style>
+    .analysis-header {
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        border: 1px solid rgba(124, 77, 255, 0.2);
+    }
+    
+    .video-container {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .transcript-panel {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+    }
+    
+    .scene-timeline-container {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+    }
+</style>
+
+@if (analysisResult == null)
+{
+    <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8 text-center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        <MudText Class="mt-4" Typo="Typo.h6" Color="Color.Secondary">Loading analysis...</MudText>
+    </MudContainer>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+        <!-- Header -->
+        <div class="analysis-header mb-4">
+            <MudText Typo="Typo.h4" Class="gradient-text" Style="font-weight: 700;">
+                <MudIcon Icon="@Icons.Material.Filled.VideoLibrary" Class="mr-2" />
+                Video Analysis Results
+            </MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+                Video ID: @VideoId | Processed: @DateTime.Now.ToString("MMM dd, yyyy HH:mm")
+            </MudText>
+        </div>
+        
+        <MudGrid Spacing="3">
+            <!-- Left Column - Video & Timeline -->
+            <MudItem xs="12" lg="8">
+                <!-- Video Player -->
+                <MudPaper Class="video-container pa-4 mb-3" Elevation="3">
+                    <MudText Typo="Typo.h6" Class="mb-3" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.PlayCircle" Class="mr-2" />
+                        Video Player
+                    </MudText>
+                    <VideoPlayer VideoUrl="@analysisResult.VideoUrl" @ref="videoPlayer" />
+                </MudPaper>
+                
+                <!-- Scene Timeline -->
+                <MudPaper Class="scene-timeline-container" Elevation="3">
+                    <MudText Typo="Typo.h6" Class="mb-3" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.Timeline" Class="mr-2" />
+                        Scene Timeline
+                    </MudText>
+                    <SceneTimeline Scenes="@analysisResult.Scenes" OnSceneClicked="SeekTo" />
+                </MudPaper>
+                
+                <!-- Scene Cards -->
+                <MudGrid Spacing="2" Class="mt-3">
+                    @foreach (var scene in analysisResult.Scenes)
+                    {
+                        <MudItem xs="12" md="4">
+                            <MudPaper Class="pa-3 glass-effect" Style="cursor: pointer; transition: all 0.3s ease;" 
+                                      @onclick="() => SeekTo(scene.StartTime)">
+                                <MudText Typo="Typo.subtitle1" Style="font-weight: 600;">@scene.Title</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                    @FormatTime(scene.StartTime) - @FormatTime(scene.EndTime)
+                                </MudText>
+                                <MudText Typo="Typo.body2" Class="mt-2" Color="Color.Secondary">
+                                    @scene.Description
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudItem>
+
+            <!-- Right Column - Transcript -->
+            <MudItem xs="12" lg="4">
+                <MudPaper Class="transcript-panel pa-4" Elevation="3" Style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+                    <MudText Typo="Typo.h6" Class="mb-3" Style="font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.Subtitles" Class="mr-2" />
+                        Transcript
+                    </MudText>
+                    
+                    <MudTextField @bind-Value="searchTerm" 
+                                  Label="Search transcript..." 
+                                  Variant="Variant.Outlined" 
+                                  Adornment="Adornment.End" 
+                                  AdornmentIcon="@Icons.Material.Filled.Search" 
+                                  OnAdornmentClick="SearchTranscript"
+                                  Immediate="true"
+                                  Class="mb-3" />
+                    
+                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">
+                        @filteredSegments.Count() of @analysisResult.Transcript.Count segments
+                    </MudText>
+                    
+                    <div style="overflow-y: auto; flex-grow: 1;">
+                        <TranscriptView Segments="@filteredSegments" OnSegmentClicked="SeekTo" />
+                    </div>
+                    
+                    @if (!filteredSegments.Any())
+                    {
+                        <div class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Secondary" />
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+                                No results found
+                            </MudText>
+                        </div>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+
+@code {
+    [Parameter]
+    public int VideoId { get; set; }
+
+    private Models.VideoAnalysisResult? analysisResult;
+    private IEnumerable<Models.TranscriptSegment> filteredSegments = new List<Models.TranscriptSegment>();
+    private string searchTerm = string.Empty;
+    private Shared.VideoPlayer? videoPlayer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading delay
+        await Task.Delay(800);
+        analysisResult = CreateDummyData();
+        filteredSegments = analysisResult.Transcript;
+    }
+
+    private async Task SeekTo(double timeInSeconds)
+    {
+        if (videoPlayer != null)
+        {
+            await videoPlayer.SeekToTime(timeInSeconds);
+        }
+    }
+
+    private void SearchTranscript()
+    {
+        if (analysisResult == null) return;
+
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredSegments = analysisResult.Transcript;
+        }
+        else
+        {
+            filteredSegments = analysisResult.Transcript
+                .Where(s => s.Text.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                           s.Speaker.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    private string FormatTime(double seconds)
+    {
+        var ts = TimeSpan.FromSeconds(seconds);
+        return ts.ToString(@"mm\:ss");
+    }
+
+    private Models.VideoAnalysisResult CreateDummyData()
+    {
+        return new Models.VideoAnalysisResult
+        {
+            VideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            Scenes = new List<Models.Scene>
+            {
+                new Models.Scene 
+                { 
+                    Title = "Opening Scene", 
+                    StartTime = 0, 
+                    EndTime = 30, 
+                    Description = "Introduction and opening credits with establishing shots" 
+                },
+                new Models.Scene 
+                { 
+                    Title = "Main Content", 
+                    StartTime = 30, 
+                    EndTime = 120, 
+                    Description = "Primary storyline development and character interactions" 
+                },
+                new Models.Scene 
+                { 
+                    Title = "Climax", 
+                    StartTime = 120, 
+                    EndTime = 160, 
+                    Description = "Peak dramatic moment and conflict resolution" 
+                },
+                new Models.Scene 
+                { 
+                    Title = "Ending", 
+                    StartTime = 160, 
+                    EndTime = 180, 
+                    Description = "Conclusion and closing remarks with final scenes" 
+                }
+            },
+            Transcript = new List<Models.TranscriptSegment>
+            {
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 0, 
+                    EndTime = 5, 
+                    Text = "Welcome to this comprehensive video analysis demonstration.", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 5, 
+                    EndTime = 10, 
+                    Text = "Today we will explore amazing content and cutting-edge features.", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 10, 
+                    EndTime = 15, 
+                    Text = "Let's get started with the introduction and overview.", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 15, 
+                    EndTime = 20, 
+                    Text = "The video analysis platform uses advanced AI technology.", 
+                    Speaker = "Host" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 30, 
+                    EndTime = 35, 
+                    Text = "This is the main content section where we dive deep.", 
+                    Speaker = "Host" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 35, 
+                    EndTime = 40, 
+                    Text = "Machine learning models analyze every frame for insights.", 
+                    Speaker = "Expert" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 120, 
+                    EndTime = 125, 
+                    Text = "We've reached the most exciting part of our demonstration.", 
+                    Speaker = "Host" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 160, 
+                    EndTime = 165, 
+                    Text = "Thank you for watching this video analysis demo!", 
+                    Speaker = "Narrator" 
+                },
+                new Models.TranscriptSegment 
+                { 
+                    StartTime = 165, 
+                    EndTime = 170, 
+                    Text = "Don't forget to upload your own videos for analysis.", 
+                    Speaker = "Narrator" 
+                }
+            }
+        };
+    }
+}
