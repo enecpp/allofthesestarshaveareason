@@ -1,0 +1,123 @@
+﻿using allofthesestarshaveareason.Services.Interfaces;
+using allofthesestarshaveareason.Models;
+using OpenCvSharp;
+
+namespace allofthesestarshaveareason.Services.Implementations;
+
+/// <summary>
+/// OpenCV kullanarak sahne tespiti yapan servis
+/// </summary>
+public class OpenCvSceneDetectionService : ISceneDetectionService
+{
+    private readonly ILogger<OpenCvSceneDetectionService> _logger;
+
+    public OpenCvSceneDetectionService(ILogger<OpenCvSceneDetectionService> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task<IReadOnlyList<Scene>> DetectScenesAsync(
+        IReadOnlyList<string> framePaths,
+        double threshold = 0.7,
+        IProgress<int>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (framePaths.Count < 2)
+        {
+            _logger.LogWarning("Not enough frames for scene detection. Frame count: {Count}", framePaths.Count);
+            return Array.Empty<Scene>();
+        }
+
+        _logger.LogInformation("Starting scene detection with {Count} frames and threshold {Threshold}", 
+            framePaths.Count, threshold);
+
+        return await Task.Run(() => DetectScenesInternal(framePaths, threshold, progress, cancellationToken), cancellationToken);
+    }
+
+    private List<Scene> DetectScenesInternal(
+        IReadOnlyList<string> framePaths,
+        double threshold,
+        IProgress<int>? progress,
+        CancellationToken cancellationToken)
+    {
+        var scenes = new List<Scene>
+        {
+            new Scene
+            {
+                StartTime = 0,
+                Title = "Sahne 1",
+                Description = string.Empty
+            }
+        };
+
+        Mat? previousHist = null;
+
+        try
+        {
+            for (int i = 0; i < framePaths.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                using var frame = Cv2.ImRead(framePaths[i]);
+                if (frame.Empty())
+                {
+                    _logger.LogWarning("Empty frame at index {Index}: {Path}", i, framePaths[i]);
+                    continue;
+                }
+
+                using var hist = ComputeColorHistogram(frame);
+
+                if (previousHist != null)
+                {
+                    var correlation = Cv2.CompareHist(previousHist, hist, HistCompMethods.Correl);
+
+                    if (correlation < threshold)
+                    {
+                        // Yeni sahne tespit edildi
+                        scenes[^1].EndTime = i;
+                        scenes.Add(new Scene
+                        {
+                            StartTime = i,
+                            Title = $"Sahne {scenes.Count + 1}",
+                            Description = string.Empty
+                        });
+
+                        _logger.LogDebug("New scene detected at {Time}s (correlation: {Correlation:F3})",
+                            i, correlation);
+                    }
+                }
+
+                previousHist?.Dispose();
+                previousHist = hist.Clone();
+
+                progress?.Report(i + 1);
+            }
+
+            // Son sahnenin bitiş zamanını ayarla
+            if (scenes.Count > 0)
+            {
+                scenes[^1].EndTime = framePaths.Count;
+            }
+
+            _logger.LogInformation("Scene detection completed. Detected {Count} scenes", scenes.Count);
+            return scenes;
+        }
+        finally
+        {
+            previousHist?.Dispose();
+        }
+    }
+
+    private static Mat ComputeColorHistogram(Mat frame)
+    {
+        var hist = new Mat();
+        int[] channels = { 0, 1, 2 };
+        int[] histSize = { 8, 8, 8 };
+        Rangef[] ranges = { new(0, 256), new(0, 256), new(0, 256) };
+        
+        Cv2.CalcHist(new[] { frame }, channels, null, hist, 3, histSize, ranges);
+        Cv2.Normalize(hist, hist, 0, 1, NormTypes.MinMax);
+        
+        return hist;
+    }
+}

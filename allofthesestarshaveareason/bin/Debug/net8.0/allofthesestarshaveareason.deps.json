@@ -11,7 +11,11 @@
           "Microsoft.ML.DataView": "4.0.2",
           "Microsoft.ML.OnnxRuntime": "1.23.1",
           "MudBlazor": "8.13.0",
-          "Radzen.Blazor": "8.0.4"
+          "OpenCvSharp4": "4.11.0.20250507",
+          "OpenCvSharp4.Windows": "4.11.0.20250507",
+          "Radzen.Blazor": "8.0.4",
+          "Whisper.net": "1.8.1",
+          "Whisper.net.Runtime": "1.8.1"
         },
         "runtime": {
           "allofthesestarshaveareason.dll": {}
@@ -154,7 +158,7 @@
       "Microsoft.ML.DataView/4.0.2": {
         "dependencies": {
           "System.Collections.Immutable": "8.0.0",
-          "System.Memory": "4.6.0"
+          "System.Memory": "4.6.3"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.ML.DataView.dll": {
@@ -252,7 +256,7 @@
       },
       "Microsoft.ML.OnnxRuntime.Managed/1.23.1": {
         "dependencies": {
-          "System.Memory": "4.6.0",
+          "System.Memory": "4.6.3",
           "System.Numerics.Tensors": "9.0.0"
         },
         "runtime": {
@@ -275,6 +279,47 @@
           }
         }
       },
+      "OpenCvSharp4/4.11.0.20250507": {
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        },
+        "runtime": {
+          "lib/net6.0/OpenCvSharp.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "OpenCvSharp4.runtime.win/4.11.0.20250507": {
+        "runtimeTargets": {
+          "runtimes/win-x64/native/OpenCvSharpExtern.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/opencv_videoio_ffmpeg4110_64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "2024.12.0.0"
+          },
+          "runtimes/win-x86/native/OpenCvSharpExtern.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/opencv_videoio_ffmpeg4110.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "2024.12.0.0"
+          }
+        }
+      },
+      "OpenCvSharp4.Windows/4.11.0.20250507": {
+        "dependencies": {
+          "OpenCvSharp4": "4.11.0.20250507",
+          "OpenCvSharp4.runtime.win": "4.11.0.20250507"
+        }
+      },
       "Radzen.Blazor/8.0.4": {
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.12",
@@ -289,7 +334,7 @@
       },
       "System.Collections.Immutable/8.0.0": {},
       "System.IO.Pipelines/8.0.0": {},
-      "System.Memory/4.6.0": {},
+      "System.Memory/4.6.3": {},
       "System.Numerics.Tensors/9.0.0": {
         "runtime": {
           "lib/net8.0/System.Numerics.Tensors.dll": {
@@ -297,7 +342,16 @@
             "fileVersion": "9.0.24.52809"
           }
         }
-      }
+      },
+      "Whisper.net/1.8.1": {
+        "runtime": {
+          "lib/net8.0/Whisper.net.dll": {
+            "assemblyVersion": "1.8.1.0",
+            "fileVersion": "1.8.1.0"
+          }
+        }
+      },
+      "Whisper.net.Runtime/1.8.1": {}
     }
   },
   "libraries": {
@@ -432,6 +486,27 @@
       "path": "mudblazor/8.13.0",
       "hashPath": "mudblazor.8.13.0.nupkg.sha512"
     },
+    "OpenCvSharp4/4.11.0.20250507": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-j/R+G6xGC5IV2wGRU0/GF5qG/FrP+Uxp8dmNnXFlIdiw8Gfo4mtvKcBOBfS/bn4pP/7FNHLFX/xvMtgPJeDjAA==",
+      "path": "opencvsharp4/4.11.0.20250507",
+      "hashPath": "opencvsharp4.4.11.0.20250507.nupkg.sha512"
+    },
+    "OpenCvSharp4.runtime.win/4.11.0.20250507": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3PxMXyzR+pkL9UOx2PiBjZm+/iyCIu5D6OlA1sq9MH7oWrfvVnCXJlUYhIJv67F7SLUwUuGwXDIQBfdsL/54lg==",
+      "path": "opencvsharp4.runtime.win/4.11.0.20250507",
+      "hashPath": "opencvsharp4.runtime.win.4.11.0.20250507.nupkg.sha512"
+    },
+    "OpenCvSharp4.Windows/4.11.0.20250507": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Vwbvv8mkK9L8kbaTpQyiguuVj7+2wbXVM2FJkJjsfEIjXjSvzt5mWX/yfYJA6aPH0Mn89FwlBtHo84Cl143C7g==",
+      "path": "opencvsharp4.windows/4.11.0.20250507",
+      "hashPath": "opencvsharp4.windows.4.11.0.20250507.nupkg.sha512"
+    },
     "Radzen.Blazor/8.0.4": {
       "type": "package",
       "serviceable": true,
@@ -453,12 +528,12 @@
       "path": "system.io.pipelines/8.0.0",
       "hashPath": "system.io.pipelines.8.0.0.nupkg.sha512"
     },
-    "System.Memory/4.6.0": {
+    "System.Memory/4.6.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-OEkbBQoklHngJ8UD8ez2AERSk2g+/qpAaSWWCBFbpH727HxDq5ydVkuncBaKcKfwRqXGWx64dS6G1SUScMsitg==",
-      "path": "system.memory/4.6.0",
-      "hashPath": "system.memory.4.6.0.nupkg.sha512"
+      "sha512": "sha512-qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A==",
+      "path": "system.memory/4.6.3",
+      "hashPath": "system.memory.4.6.3.nupkg.sha512"
     },
     "System.Numerics.Tensors/9.0.0": {
       "type": "package",
@@ -466,6 +541,20 @@
       "sha512": "sha512-hyJB4UlpAi19Xr9AXzu2NuagKC4lPfHObNMEAA0HmqFz2rX7wKgzeYzO/jM/eBHDhnUGFFEjk5cOoJaxqg5J4A==",
       "path": "system.numerics.tensors/9.0.0",
       "hashPath": "system.numerics.tensors.9.0.0.nupkg.sha512"
+    },
+    "Whisper.net/1.8.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NOcPlajorIQ5bIaf21PESirTvhCSb/T4qbUZreoU31jOu2W6kGJRgy+1f/M7PK/atcWXLF5FsXIj2lHi5sym1w==",
+      "path": "whisper.net/1.8.1",
+      "hashPath": "whisper.net.1.8.1.nupkg.sha512"
+    },
+    "Whisper.net.Runtime/1.8.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DW2JhlBbt0W5W+cIP8Uevt5+7XnjPIsG9b5FyAdeB9taNk9w1WFw9W7TYSNaqgyEbEHHPNOXA6hl+yrmBwOfsQ==",
+      "path": "whisper.net.runtime/1.8.1",
+      "hashPath": "whisper.net.runtime.1.8.1.nupkg.sha512"
     }
   }
 }

@@ -1,0 +1,18 @@
+﻿using allofthesestarshaveareason.Models;
+
+namespace allofthesestarshaveareason.Services.Interfaces;
+
+/// <summary>
+/// Video sahne tespiti servis arayüzü
+/// </summary>
+public interface ISceneDetectionService
+{
+    /// <summary>
+    /// Frame listesinden sahne tespiti yapar
+    /// </summary>
+    Task<IReadOnlyList<Scene>> DetectScenesAsync(
+        IReadOnlyList<string> framePaths, 
+        double threshold = 0.7,
+        IProgress<int>? progress = null,
+        CancellationToken cancellationToken = default);
+}

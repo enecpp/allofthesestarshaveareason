@@ -366,6 +366,53 @@
           "buildMultiTargeting/MudBlazor.props": {}
         }
       },
+      "OpenCvSharp4/4.11.0.20250507": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        },
+        "compile": {
+          "lib/net6.0/OpenCvSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/OpenCvSharp.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "OpenCvSharp4.runtime.win/4.11.0.20250507": {
+        "type": "package",
+        "build": {
+          "build/net5.0/OpenCvSharp4.runtime.win.props": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/OpenCvSharpExtern.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/opencv_videoio_ffmpeg4110_64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/OpenCvSharpExtern.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/opencv_videoio_ffmpeg4110.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "OpenCvSharp4.Windows/4.11.0.20250507": {
+        "type": "package",
+        "dependencies": {
+          "OpenCvSharp4": "4.11.0.20250507",
+          "OpenCvSharp4.runtime.win": "4.11.0.20250507"
+        }
+      },
       "Radzen.Blazor/8.0.4": {
         "type": "package",
         "dependencies": {
@@ -421,7 +468,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "System.Memory/4.6.0": {
+      "System.Memory/4.6.3": {
         "type": "package",
         "compile": {
           "lib/netcoreapp2.1/_._": {}
@@ -444,6 +491,21 @@
         },
         "build": {
           "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "Whisper.net/1.8.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Whisper.net.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Whisper.net.dll": {}
+        }
+      },
+      "Whisper.net.Runtime/1.8.1": {
+        "type": "package",
+        "build": {
+          "build/Whisper.net.Runtime.targets": {}
         }
       }
     }
@@ -941,6 +1003,55 @@
         "staticwebassets/MudBlazor.min.js"
       ]
     },
+    "OpenCvSharp4/4.11.0.20250507": {
+      "sha512": "j/R+G6xGC5IV2wGRU0/GF5qG/FrP+Uxp8dmNnXFlIdiw8Gfo4mtvKcBOBfS/bn4pP/7FNHLFX/xvMtgPJeDjAA==",
+      "type": "package",
+      "path": "opencvsharp4/4.11.0.20250507",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net48/OpenCvSharp.dll",
+        "lib/net48/OpenCvSharp.xml",
+        "lib/net6.0/OpenCvSharp.dll",
+        "lib/net6.0/OpenCvSharp.xml",
+        "lib/netstandard2.0/OpenCvSharp.dll",
+        "lib/netstandard2.0/OpenCvSharp.xml",
+        "lib/netstandard2.1/OpenCvSharp.dll",
+        "lib/netstandard2.1/OpenCvSharp.xml",
+        "opencvsharp4.4.11.0.20250507.nupkg.sha512",
+        "opencvsharp4.nuspec"
+      ]
+    },
+    "OpenCvSharp4.runtime.win/4.11.0.20250507": {
+      "sha512": "3PxMXyzR+pkL9UOx2PiBjZm+/iyCIu5D6OlA1sq9MH7oWrfvVnCXJlUYhIJv67F7SLUwUuGwXDIQBfdsL/54lg==",
+      "type": "package",
+      "path": "opencvsharp4.runtime.win/4.11.0.20250507",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/net48/OpenCvSharp4.runtime.win.props",
+        "build/net5.0/OpenCvSharp4.runtime.win.props",
+        "build/netcoreapp/OpenCvSharp4.runtime.win.props",
+        "build/netstandard/OpenCvSharp4.runtime.win.props",
+        "opencvsharp4.runtime.win.4.11.0.20250507.nupkg.sha512",
+        "opencvsharp4.runtime.win.nuspec",
+        "runtimes/win-x64/native/OpenCvSharpExtern.dll",
+        "runtimes/win-x64/native/opencv_videoio_ffmpeg4110_64.dll",
+        "runtimes/win-x86/native/OpenCvSharpExtern.dll",
+        "runtimes/win-x86/native/opencv_videoio_ffmpeg4110.dll"
+      ]
+    },
+    "OpenCvSharp4.Windows/4.11.0.20250507": {
+      "sha512": "Vwbvv8mkK9L8kbaTpQyiguuVj7+2wbXVM2FJkJjsfEIjXjSvzt5mWX/yfYJA6aPH0Mn89FwlBtHo84Cl143C7g==",
+      "type": "package",
+      "path": "opencvsharp4.windows/4.11.0.20250507",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "opencvsharp4.windows.4.11.0.20250507.nupkg.sha512",
+        "opencvsharp4.windows.nuspec"
+      ]
+    },
     "Radzen.Blazor/8.0.4": {
       "sha512": "1F2j5lDSwJbclC89yeyNt7TrSAb08GbyiJack/ZueTvD7fmntL+5bPq5xvHzQbREGX+dWPVh3iYEFRQeaiojlA==",
       "type": "package",
@@ -1064,10 +1175,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Memory/4.6.0": {
-      "sha512": "OEkbBQoklHngJ8UD8ez2AERSk2g+/qpAaSWWCBFbpH727HxDq5ydVkuncBaKcKfwRqXGWx64dS6G1SUScMsitg==",
+    "System.Memory/4.6.3": {
+      "sha512": "qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A==",
       "type": "package",
-      "path": "system.memory/4.6.0",
+      "path": "system.memory/4.6.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1080,7 +1191,8 @@
         "lib/netcoreapp2.1/_._",
         "lib/netstandard2.0/System.Memory.dll",
         "lib/netstandard2.0/System.Memory.xml",
-        "system.memory.4.6.0.nupkg.sha512",
+        "lib/netstandard2.1/_._",
+        "system.memory.4.6.3.nupkg.sha512",
         "system.memory.nuspec"
       ]
     },
@@ -1111,6 +1223,124 @@
         "system.numerics.tensors.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "Whisper.net/1.8.1": {
+      "sha512": "NOcPlajorIQ5bIaf21PESirTvhCSb/T4qbUZreoU31jOu2W6kGJRgy+1f/M7PK/atcWXLF5FsXIj2lHi5sym1w==",
+      "type": "package",
+      "path": "whisper.net/1.8.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "lib/net8.0-android34.0/Whisper.net.dll",
+        "lib/net8.0-android34.0/Whisper.net.xml",
+        "lib/net8.0-ios18.0/Whisper.net.dll",
+        "lib/net8.0-maccatalyst18.0/Whisper.net.dll",
+        "lib/net8.0-tvos18.0/Whisper.net.dll",
+        "lib/net8.0/Whisper.net.dll",
+        "lib/net9.0-android35.0/Whisper.net.dll",
+        "lib/net9.0-android35.0/Whisper.net.xml",
+        "lib/net9.0-ios18.0/Whisper.net.dll",
+        "lib/net9.0-maccatalyst18.0/Whisper.net.dll",
+        "lib/net9.0-tvos18.0/Whisper.net.dll",
+        "lib/net9.0/Whisper.net.dll",
+        "lib/netstandard2.0/Whisper.net.dll",
+        "readme.md",
+        "whisper.net.1.8.1.nupkg.sha512",
+        "whisper.net.nuspec"
+      ]
+    },
+    "Whisper.net.Runtime/1.8.1": {
+      "sha512": "DW2JhlBbt0W5W+cIP8Uevt5+7XnjPIsG9b5FyAdeB9taNk9w1WFw9W7TYSNaqgyEbEHHPNOXA6hl+yrmBwOfsQ==",
+      "type": "package",
+      "path": "whisper.net.runtime/1.8.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Whisper.net.Runtime.targets",
+        "build/android-arm64-v8a/libggml-base-whisper.so",
+        "build/android-arm64-v8a/libggml-cpu-whisper.so",
+        "build/android-arm64-v8a/libggml-whisper.so",
+        "build/android-arm64-v8a/libwhisper.so",
+        "build/android-x86/libggml-base-whisper.so",
+        "build/android-x86/libggml-cpu-whisper.so",
+        "build/android-x86/libggml-whisper.so",
+        "build/android-x86/libwhisper.so",
+        "build/android-x86_64/libggml-base-whisper.so",
+        "build/android-x86_64/libggml-cpu-whisper.so",
+        "build/android-x86_64/libggml-whisper.so",
+        "build/android-x86_64/libwhisper.so",
+        "build/browser-wasm/libggml-base-whisper.a",
+        "build/browser-wasm/libggml-cpu-whisper.a",
+        "build/browser-wasm/libggml-whisper.a",
+        "build/browser-wasm/libwhisper.a",
+        "build/ggml-metal.metal",
+        "build/ios-device/libggml-base-whisper.dylib",
+        "build/ios-device/libggml-blas-whisper.dylib",
+        "build/ios-device/libggml-cpu-whisper.dylib",
+        "build/ios-device/libggml-metal-whisper.dylib",
+        "build/ios-device/libggml-whisper.dylib",
+        "build/ios-device/libwhisper.dylib",
+        "build/ios-simulator/libggml-base-whisper.dylib",
+        "build/ios-simulator/libggml-blas-whisper.dylib",
+        "build/ios-simulator/libggml-cpu-whisper.dylib",
+        "build/ios-simulator/libggml-whisper.dylib",
+        "build/ios-simulator/libwhisper.dylib",
+        "build/linux-arm/libggml-base-whisper.so",
+        "build/linux-arm/libggml-cpu-whisper.so",
+        "build/linux-arm/libggml-whisper.so",
+        "build/linux-arm/libwhisper.so",
+        "build/linux-arm64/libggml-base-whisper.so",
+        "build/linux-arm64/libggml-cpu-whisper.so",
+        "build/linux-arm64/libggml-whisper.so",
+        "build/linux-arm64/libwhisper.so",
+        "build/linux-x64/libggml-base-whisper.so",
+        "build/linux-x64/libggml-cpu-whisper.so",
+        "build/linux-x64/libggml-whisper.so",
+        "build/linux-x64/libwhisper.so",
+        "build/maccatalyst/libggml-base-whisper.dylib",
+        "build/maccatalyst/libggml-blas-whisper.dylib",
+        "build/maccatalyst/libggml-cpu-whisper.dylib",
+        "build/maccatalyst/libggml-whisper.dylib",
+        "build/maccatalyst/libwhisper.dylib",
+        "build/macos-arm64/libggml-base-whisper.dylib",
+        "build/macos-arm64/libggml-blas-whisper.dylib",
+        "build/macos-arm64/libggml-cpu-whisper.dylib",
+        "build/macos-arm64/libggml-metal-whisper.dylib",
+        "build/macos-arm64/libggml-whisper.dylib",
+        "build/macos-arm64/libwhisper.dylib",
+        "build/macos-x64/libggml-base-whisper.dylib",
+        "build/macos-x64/libggml-blas-whisper.dylib",
+        "build/macos-x64/libggml-cpu-whisper.dylib",
+        "build/macos-x64/libggml-whisper.dylib",
+        "build/macos-x64/libwhisper.dylib",
+        "build/tvos-device/libggml-base-whisper.dylib",
+        "build/tvos-device/libggml-blas-whisper.dylib",
+        "build/tvos-device/libggml-cpu-whisper.dylib",
+        "build/tvos-device/libggml-metal-whisper.dylib",
+        "build/tvos-device/libggml-whisper.dylib",
+        "build/tvos-device/libwhisper.dylib",
+        "build/tvos-simulator/libggml-base-whisper.dylib",
+        "build/tvos-simulator/libggml-blas-whisper.dylib",
+        "build/tvos-simulator/libggml-cpu-whisper.dylib",
+        "build/tvos-simulator/libggml-whisper.dylib",
+        "build/tvos-simulator/libwhisper.dylib",
+        "build/win-arm64/ggml-base-whisper.dll",
+        "build/win-arm64/ggml-cpu-whisper.dll",
+        "build/win-arm64/ggml-whisper.dll",
+        "build/win-arm64/whisper.dll",
+        "build/win-x64/ggml-base-whisper.dll",
+        "build/win-x64/ggml-cpu-whisper.dll",
+        "build/win-x64/ggml-whisper.dll",
+        "build/win-x64/whisper.dll",
+        "build/win-x86/ggml-base-whisper.dll",
+        "build/win-x86/ggml-cpu-whisper.dll",
+        "build/win-x86/ggml-whisper.dll",
+        "build/win-x86/whisper.dll",
+        "content/readme.md",
+        "whisper.net.runtime.1.8.1.nupkg.sha512",
+        "whisper.net.runtime.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -1118,7 +1348,11 @@
       "Microsoft.ML.DataView >= 4.0.2",
       "Microsoft.ML.OnnxRuntime >= 1.23.1",
       "MudBlazor >= 8.13.0",
-      "Radzen.Blazor >= 8.0.4"
+      "OpenCvSharp4 >= 4.11.0.20250507",
+      "OpenCvSharp4.Windows >= 4.11.0.20250507",
+      "Radzen.Blazor >= 8.0.4",
+      "Whisper.net >= 1.8.1",
+      "Whisper.net.Runtime >= 1.8.1"
     ]
   },
   "packageFolders": {
@@ -1183,9 +1417,25 @@
             "target": "Package",
             "version": "[8.13.0, )"
           },
+          "OpenCvSharp4": {
+            "target": "Package",
+            "version": "[4.11.0.20250507, )"
+          },
+          "OpenCvSharp4.Windows": {
+            "target": "Package",
+            "version": "[4.11.0.20250507, )"
+          },
           "Radzen.Blazor": {
             "target": "Package",
             "version": "[8.0.4, )"
+          },
+          "Whisper.net": {
+            "target": "Package",
+            "version": "[1.8.1, )"
+          },
+          "Whisper.net.Runtime": {
+            "target": "Package",
+            "version": "[1.8.1, )"
           }
         },
         "imports": [

@@ -1,0 +1,158 @@
+﻿using allofthesestarshaveareason.Services.Interfaces;
+using System.Diagnostics;
+
+namespace allofthesestarshaveareason.Services.Implementations;
+
+/// <summary>
+/// FFmpeg işlemleri için servis implementasyonu
+/// </summary>
+public class FFmpegService : IFFmpegService
+{
+    private readonly ILogger<FFmpegService> _logger;
+    private readonly string? _ffmpegPath;
+
+    public FFmpegService(ILogger<FFmpegService> logger)
+    {
+        _logger = logger;
+        _ffmpegPath = FindFFmpegPath();
+    }
+
+    public bool IsFFmpegAvailable() => !string.IsNullOrEmpty(_ffmpegPath);
+
+    public async Task<string> ExtractAudioAsync(string videoPath, string outputPath, CancellationToken cancellationToken = default)
+    {
+        if (!IsFFmpegAvailable())
+        {
+            throw new FileNotFoundException(
+                "FFmpeg bulunamadı! FFmpeg'i indirip sistem PATH'ine ekleyin veya proje klasörüne koyun. " +
+                "İndirme: https://ffmpeg.org/download.html");
+        }
+
+        _logger.LogInformation("Extracting audio from {VideoPath} to {OutputPath}", videoPath, outputPath);
+
+        var arguments = $"-i \"{videoPath}\" -vn -acodec pcm_s16le -ar 16000 -ac 1 \"{outputPath}\"";
+        await ExecuteFFmpegAsync(arguments, cancellationToken);
+
+        if (!File.Exists(outputPath))
+        {
+            throw new InvalidOperationException($"Ses dosyası oluşturulamadı: {outputPath}");
+        }
+
+        _logger.LogInformation("Audio extracted successfully to {OutputPath}", outputPath);
+        return outputPath;
+    }
+
+    public async Task<IReadOnlyList<string>> ExtractFramesAsync(
+        string videoPath, 
+        string outputDirectory, 
+        int framesPerSecond = 1, 
+        CancellationToken cancellationToken = default)
+    {
+        if (!IsFFmpegAvailable())
+        {
+            throw new FileNotFoundException("FFmpeg bulunamadı!");
+        }
+
+        if (!Directory.Exists(outputDirectory))
+        {
+            Directory.CreateDirectory(outputDirectory);
+        }
+
+        _logger.LogInformation("Extracting frames from {VideoPath} to {OutputDirectory}", videoPath, outputDirectory);
+
+        var framePattern = Path.Combine(outputDirectory, "frame-%04d.jpg");
+        var arguments = $"-i \"{videoPath}\" -vf fps={framesPerSecond} \"{framePattern}\"";
+        
+        await ExecuteFFmpegAsync(arguments, cancellationToken);
+
+        var frameFiles = Directory.GetFiles(outputDirectory, "*.jpg")
+            .OrderBy(f => f)
+            .ToList();
+
+        _logger.LogInformation("Extracted {Count} frames from video", frameFiles.Count);
+        return frameFiles.AsReadOnly();
+    }
+
+    private async Task ExecuteFFmpegAsync(string arguments, CancellationToken cancellationToken)
+    {
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = _ffmpegPath!,
+            Arguments = arguments,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = processStartInfo };
+        
+        process.Start();
+
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+
+        await process.WaitForExitAsync(cancellationToken);
+
+        var output = await outputTask;
+        var error = await errorTask;
+
+        if (process.ExitCode != 0)
+        {
+            _logger.LogError("FFmpeg failed with exit code {ExitCode}. Error: {Error}", process.ExitCode, error);
+            throw new InvalidOperationException($"FFmpeg başarısız oldu (exit code {process.ExitCode})");
+        }
+    }
+
+    private string? FindFFmpegPath()
+    {
+        var localPaths = new[]
+        {
+            "ffmpeg.exe",
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe"),
+            Path.Combine(Directory.GetCurrentDirectory(), "ffmpeg.exe"),
+            Path.Combine(Directory.GetCurrentDirectory(), "tools", "ffmpeg.exe")
+        };
+
+        foreach (var path in localPaths)
+        {
+            if (File.Exists(path))
+            {
+                _logger.LogInformation("FFmpeg found at: {Path}", path);
+                return path;
+            }
+        }
+
+        // Sistem PATH'inde ara
+        try
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                Arguments = "-version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(processStartInfo);
+            if (process != null)
+            {
+                process.WaitForExit();
+                if (process.ExitCode == 0)
+                {
+                    _logger.LogInformation("FFmpeg found in system PATH");
+                    return "ffmpeg";
+                }
+            }
+        }
+        catch
+        {
+            // FFmpeg sistem PATH'inde değil
+        }
+
+        _logger.LogWarning("FFmpeg not found in local directory or system PATH");
+        return null;
+    }
+}

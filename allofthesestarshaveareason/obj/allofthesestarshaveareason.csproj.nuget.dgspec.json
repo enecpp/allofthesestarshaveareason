@@ -62,9 +62,25 @@
               "target": "Package",
               "version": "[8.13.0, )"
             },
+            "OpenCvSharp4": {
+              "target": "Package",
+              "version": "[4.11.0.20250507, )"
+            },
+            "OpenCvSharp4.Windows": {
+              "target": "Package",
+              "version": "[4.11.0.20250507, )"
+            },
             "Radzen.Blazor": {
               "target": "Package",
               "version": "[8.0.4, )"
+            },
+            "Whisper.net": {
+              "target": "Package",
+              "version": "[1.8.1, )"
+            },
+            "Whisper.net.Runtime": {
+              "target": "Package",
+              "version": "[1.8.1, )"
             }
           },
           "imports": [

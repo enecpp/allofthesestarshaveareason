@@ -1,0 +1,14 @@
+using allofthesestarshaveareason.Models;
+
+namespace allofthesestarshaveareason.Services.Interfaces;
+
+public interface ITranscriptService
+{
+    Task<IReadOnlyList<TranscriptSegment>> GenerateTranscriptAsync(
+        string audioPath, 
+        string? language = null, 
+        IProgress<int>? progress = null,
+        CancellationToken cancellationToken = default);
+    
+    Task<bool> EnsureModelReadyAsync(CancellationToken cancellationToken = default);
+}

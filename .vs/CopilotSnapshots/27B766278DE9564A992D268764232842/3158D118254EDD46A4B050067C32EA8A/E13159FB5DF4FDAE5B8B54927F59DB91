@@ -1,0 +1,112 @@
+﻿using allofthesestarshaveareason.Services.Interfaces;
+using allofthesestarshaveareason.Models;
+using System.Collections.Concurrent;
+
+namespace allofthesestarshaveareason.Services.Implementations;
+
+public class InMemoryJobRepository : IJobRepository
+{
+    private readonly ConcurrentDictionary<string, AnalysisStatus> _jobs = new();
+    private readonly ILogger<InMemoryJobRepository> _logger;
+
+    public InMemoryJobRepository(ILogger<InMemoryJobRepository> logger)
+    {
+        _logger = logger;
+    }
+
+    public Task<string> CreateJobAsync(CancellationToken cancellationToken = default)
+    {
+        var jobId = Guid.NewGuid().ToString();
+        var status = new AnalysisStatus
+        {
+            Status = "Oluşturuldu",
+            Progress = 0
+        };
+
+        if (!_jobs.TryAdd(jobId, status))
+        {
+            throw new InvalidOperationException($"Job already exists: {jobId}");
+        }
+
+        _logger.LogInformation("Job created: {JobId}", jobId);
+        return Task.FromResult(jobId);
+    }
+
+    public Task UpdateJobStatusAsync(
+        string jobId,
+        string status,
+        int progress,
+        CancellationToken cancellationToken = default)
+    {
+        if (_jobs.TryGetValue(jobId, out var job))
+        {
+            job.Status = status;
+            job.Progress = Math.Clamp(progress, 0, 100);
+            _logger.LogDebug("Job {JobId} updated: {Status} ({Progress}%)", jobId, status, progress);
+        }
+        else
+        {
+            _logger.LogWarning("Job not found for update: {JobId}", jobId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task<AnalysisStatus?> GetJobStatusAsync(string jobId, CancellationToken cancellationToken = default)
+    {
+        _jobs.TryGetValue(jobId, out var status);
+        return Task.FromResult(status);
+    }
+
+    public Task CompleteJobAsync(string jobId, int? resultId, CancellationToken cancellationToken = default)
+    {
+        if (_jobs.TryGetValue(jobId, out var job))
+        {
+            job.Status = "Tamamlandı";
+            job.Progress = 100;
+            job.ResultId = resultId;
+            _logger.LogInformation("Job completed: {JobId}", jobId);
+        }
+        else
+        {
+            _logger.LogWarning("Job not found for completion: {JobId}", jobId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task FailJobAsync(string jobId, string errorMessage, CancellationToken cancellationToken = default)
+    {
+        if (_jobs.TryGetValue(jobId, out var job))
+        {
+            job.Status = $"Hata: {errorMessage}";
+            job.Progress = 100;
+            _logger.LogError("Job failed: {JobId} - {ErrorMessage}", jobId, errorMessage);
+        }
+        else
+        {
+            _logger.LogWarning("Job not found for failure: {JobId}", jobId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SaveJobResultsAsync(string jobId, object results, CancellationToken cancellationToken = default)
+    {
+        if (_jobs.TryGetValue(jobId, out var job))
+        {
+            if (results is (List<TranscriptSegment> transcript, List<Scene> scenes))
+            {
+                job.Transcript = transcript;
+                job.Scenes = scenes;
+                _logger.LogInformation("Job results saved: {JobId}", jobId);
+            }
+        }
+        else
+        {
+            _logger.LogWarning("Job not found for saving results: {JobId}", jobId);
+        }
+
+        return Task.CompletedTask;
+    }
+}

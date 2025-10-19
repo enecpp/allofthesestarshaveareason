@@ -1,0 +1,4 @@
+wwwroot\favicon.png
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\app.css

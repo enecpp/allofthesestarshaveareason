@@ -1,0 +1,445 @@
+﻿using allofthesestarshaveareason.Models;
+using OpenCvSharp;
+using System.Diagnostics;
+using Whisper.net;
+using Whisper.net.Ggml;
+using static Whisper.net.Ggml.WhisperGgmlDownloader;
+
+namespace allofthesestarshaveareason.Services;
+
+public interface IAnalysisService
+{
+    Task<string> StartAnalysisJobAsync(IFormFile file);
+    Task<AnalysisStatus> GetAnalysisStatusAsync(string jobId);
+}
+
+public class AnalysisStatus
+{
+    public string Status { get; set; } = string.Empty;
+    public int Progress { get; set; }
+    public int? ResultId { get; set; }
+    public List<TranscriptSegment>? Transcript { get; set; }
+    public List<Scene>? Scenes { get; set; }
+}
+
+public class TranscriptSegment
+{
+    public double StartTime { get; set; }
+    public double EndTime { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public string Speaker { get; set; } = "Narrator";
+}
+
+public class AnalysisService : IAnalysisService
+{
+    private static readonly Dictionary<string, AnalysisStatus> _jobs = new();
+    private readonly ILogger<AnalysisService> _logger;
+    private readonly string _whisperModelPath;
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public AnalysisService(ILogger<AnalysisService> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+    {
+        _logger = logger;
+        _httpClientFactory = httpClientFactory;
+        // appsettings.json'dan model yolunu oku, yoksa varsayılan kullan
+        _whisperModelPath = configuration["Whisper:ModelPath"] ?? "models/ggml-base.bin";
+    }
+
+    public async Task<string> StartAnalysisJobAsync(IFormFile file)
+    {
+        var jobId = Guid.NewGuid().ToString();
+
+        var uploadDirectory = "uploads";
+        if (!Directory.Exists(uploadDirectory))
+        {
+            Directory.CreateDirectory(uploadDirectory);
+        }
+
+        var filePath = Path.Combine(uploadDirectory, $"{jobId}_{file.FileName}");
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        _jobs[jobId] = new AnalysisStatus { Status = "Sırada", Progress = 0 };
+
+        _ = Task.Run(() => ProcessVideoInBackground(jobId, filePath));
+
+        return jobId;
+    }
+
+    public Task<AnalysisStatus> GetAnalysisStatusAsync(string jobId)
+    {
+        _jobs.TryGetValue(jobId, out var status);
+        return Task.FromResult(status ?? new AnalysisStatus { Status = "Bulunamadı", Progress = 0 });
+    }
+
+    private async Task ProcessVideoInBackground(string jobId, string filePath)
+    {
+        string? audioPath = null;
+        try
+        {
+            // 1. FFmpeg ile sesi ayıkla
+            _jobs[jobId].Status = "Ses ayıklanıyor...";
+            _jobs[jobId].Progress = 10;
+            _logger.LogInformation("Job {JobId}: Extracting audio from video...", jobId);
+            
+            audioPath = await ExtractAudioAsync(filePath, jobId);
+            _logger.LogInformation("Job {JobId}: Audio extracted to {AudioPath}", jobId, audioPath);
+
+            // 2. Whisper ile konuşmayı metne çevir
+            _jobs[jobId].Status = "Konuşma metne çevriliyor...";
+            _jobs[jobId].Progress = 30;
+            _logger.LogInformation("Job {JobId}: Generating transcript...", jobId);
+            
+            var transcript = await GenerateTranscriptAsync(audioPath, jobId);
+            _jobs[jobId].Transcript = transcript;
+            _logger.LogInformation("Job {JobId}: Transcript generated with {Count} segments", jobId, transcript.Count);
+
+            // 3. Sahne tespiti yap
+            _jobs[jobId].Status = "Sahneler tespit ediliyor...";
+            _jobs[jobId].Progress = 70;
+            _logger.LogInformation("Job {JobId}: Detecting scenes...", jobId);
+            
+            var scenes = await DetectScenesAsync(filePath, Guid.Parse(jobId));
+            _jobs[jobId].Scenes = scenes;
+            _logger.LogInformation("Job {JobId}: Scene detection completed with {Count} scenes", jobId, scenes.Count);
+
+            // 4. Sonuçları veritabanına kaydet
+            _jobs[jobId].Status = "Sonuçlar kaydediliyor...";
+            _jobs[jobId].Progress = 90;
+            _logger.LogInformation("Job {JobId}: Saving results...", jobId);
+            
+            // TODO: Veritabanı kaydı - transcript ve scenes kaydedilecek
+            await Task.Delay(1000);
+
+            _jobs[jobId].Status = "Tamamlandı";
+            _jobs[jobId].Progress = 100;
+            _jobs[jobId].ResultId = 123;
+            
+            _logger.LogInformation("Job {JobId}: Processing completed successfully", jobId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Job {JobId}: Error occurred during processing", jobId);
+            _jobs[jobId].Status = $"Hata Oluştu: {ex.Message}";
+            _jobs[jobId].Progress = 100;
+        }
+        finally
+        {
+            // Temizlik: Geçici ses dosyasını sil
+            if (!string.IsNullOrEmpty(audioPath) && File.Exists(audioPath))
+            {
+                try
+                {
+                    File.Delete(audioPath);
+                    _logger.LogInformation("Job {JobId}: Temporary audio file deleted: {AudioPath}", jobId, audioPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Job {JobId}: Failed to delete temporary audio file: {AudioPath}", jobId, audioPath);
+                }
+            }
+        }
+    }
+
+    private async Task<string> ExtractAudioAsync(string videoPath, string jobId)
+    {
+        var audioPath = Path.Combine("uploads", $"{jobId}.wav");
+        
+        // FFmpeg'in sistem PATH'inde olup olmadığını kontrol et
+        var ffmpegPath = FindFFmpegPath();
+        
+        if (string.IsNullOrEmpty(ffmpegPath))
+        {
+            throw new FileNotFoundException(
+                "FFmpeg bulunamadı! FFmpeg'i indirip sistem PATH'ine ekleyin veya proje klasörüne koyun. " +
+                "İndirme: https://ffmpeg.org/download.html");
+        }
+
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = ffmpegPath,
+            Arguments = $"-i \"{videoPath}\" -vn -acodec pcm_s16le -ar 16000 -ac 1 \"{audioPath}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = processStartInfo };
+        process.Start();
+
+        string output = await process.StandardOutput.ReadToEndAsync();
+        string error = await process.StandardError.ReadToEndAsync();
+        
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0)
+        {
+            _logger.LogError("FFmpeg error output: {Error}", error);
+            throw new Exception($"FFmpeg başarısız oldu (exit code {process.ExitCode}). Detaylar için loglara bakın.");
+        }
+
+        if (!File.Exists(audioPath))
+        {
+            throw new Exception($"Ses dosyası oluşturulamadı: {audioPath}");
+        }
+
+        return audioPath;
+    }
+
+    private async Task<List<TranscriptSegment>> GenerateTranscriptAsync(string audioPath, string jobId)
+    {
+        var transcript = new List<TranscriptSegment>();
+
+        try
+        {
+            // Model dosyasının varlığını kontrol et
+            if (!File.Exists(_whisperModelPath))
+            {
+                _logger.LogWarning("Whisper model not found at {ModelPath}. Attempting to download...", _whisperModelPath);
+                await DownloadWhisperModelAsync();
+            }
+
+            // Whisper factory oluştur
+            using var whisperFactory = WhisperFactory.FromPath(_whisperModelPath);
+            
+            // Processor'u oluştur
+            using var processor = whisperFactory.CreateBuilder()
+                .WithLanguage("auto") // Otomatik dil algılama (veya "tr" için Türkçe)
+                .Build();
+
+            // Ses dosyasını işle
+            using var fileStream = File.OpenRead(audioPath);
+            await foreach (var result in processor.ProcessAsync(fileStream))
+            {
+                var segment = new TranscriptSegment
+                {
+                    StartTime = result.Start.TotalSeconds,
+                    EndTime = result.End.TotalSeconds,
+                    Text = result.Text.Trim(),
+                    Speaker = "Narrator" // TODO: Speaker diarization eklenebilir
+                };
+
+                transcript.Add(segment);
+                
+                _logger.LogDebug("Job {JobId}: Segment [{Start} - {End}]: {Text}", 
+                    jobId, 
+                    result.Start.ToString(@"mm\:ss"), 
+                    result.End.ToString(@"mm\:ss"), 
+                    segment.Text);
+            }
+
+            return transcript;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Job {JobId}: Error generating transcript from {AudioPath}", jobId, audioPath);
+            throw new Exception($"Transkript oluşturma hatası: {ex.Message}", ex);
+        }
+    }
+
+    private async Task DownloadWhisperModelAsync()
+    {
+        var modelDirectory = Path.GetDirectoryName(_whisperModelPath);
+        if (!string.IsNullOrEmpty(modelDirectory) && !Directory.Exists(modelDirectory))
+        {
+            Directory.CreateDirectory(modelDirectory);
+        }
+
+        _logger.LogInformation("Downloading Whisper model to {ModelPath}...", _whisperModelPath);
+
+        // Whisper.NET ile otomatik model indirme
+        var httpClient = _httpClientFactory.CreateClient();
+        var downloader = new WhisperGgmlDownloader(httpClient);
+        using var modelStream = await downloader.GetGgmlModelAsync(GgmlType.Base);
+        using var fileWriter = File.OpenWrite(_whisperModelPath);
+        await modelStream.CopyToAsync(fileWriter);
+
+        _logger.LogInformation("Whisper model downloaded successfully");
+    }
+
+    private string? FindFFmpegPath()
+    {
+        // 1. Proje klasöründe ffmpeg.exe'yi ara
+        var localPaths = new[]
+        {
+            "ffmpeg.exe",
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe"),
+            Path.Combine(Directory.GetCurrentDirectory(), "ffmpeg.exe"),
+            Path.Combine(Directory.GetCurrentDirectory(), "tools", "ffmpeg.exe")
+        };
+
+        foreach (var path in localPaths)
+        {
+            if (File.Exists(path))
+            {
+                _logger.LogInformation("FFmpeg found at: {Path}", path);
+                return path;
+            }
+        }
+
+        // 2. Sistem PATH'inde ara
+        try
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                Arguments = "-version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(processStartInfo);
+            if (process != null)
+            {
+                process.WaitForExit();
+                if (process.ExitCode == 0)
+                {
+                    _logger.LogInformation("FFmpeg found in system PATH");
+                    return "ffmpeg";
+                }
+            }
+        }
+        catch
+        {
+            // FFmpeg sistem PATH'inde değil
+        }
+
+        _logger.LogWarning("FFmpeg not found in local directory or system PATH");
+        return null;
+    }
+
+
+    private async Task<List<Scene>> DetectScenesAsync(string videoPath, Guid jobId)
+    {
+        var scenes = new List<Scene>();
+        var framesPath = Path.Combine("uploads", jobId.ToString()); // Kareleri saklamak için geçici klasör
+        Directory.CreateDirectory(framesPath);
+
+        try
+        {
+            // 1. Adım: FFmpeg ile videodan saniyede 1 kare resim olarak ayıkla
+            var ffmpegPath = FindFFmpegPath();
+            
+            if (string.IsNullOrEmpty(ffmpegPath))
+            {
+                throw new FileNotFoundException(
+                    "FFmpeg bulunamadı! FFmpeg'i indirip sistem PATH'ine ekleyin veya proje klasörüne koyun.");
+            }
+
+            var arguments = $"-i \"{videoPath}\" -vf fps=1 \"{Path.Combine(framesPath, "frame-%04d.jpg")}\"";
+
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = ffmpegPath,
+                Arguments = arguments,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+
+            using (var process = Process.Start(processStartInfo))
+            {
+                if (process == null)
+                {
+                    throw new Exception("FFmpeg process could not be started");
+                }
+                
+                await process.WaitForExitAsync();
+                
+                if (process.ExitCode != 0)
+                {
+                    var error = await process.StandardError.ReadToEndAsync();
+                    _logger.LogError("FFmpeg frame extraction error: {Error}", error);
+                    throw new Exception("FFmpeg kare ayıklama sırasında hata verdi.");
+                }
+            }
+
+            var frameFiles = Directory.GetFiles(framesPath, "*.jpg").OrderBy(f => f).ToList();
+            if (frameFiles.Count < 2)
+            {
+                _logger.LogWarning("Job {JobId}: Not enough frames for scene detection", jobId);
+                return scenes; // Karşılaştıracak yeterli kare yoksa boş dön.
+            }
+
+            // İlk sahne her zaman 0. saniyede başlar.
+            scenes.Add(new Scene { StartTime = 0, Title = $"Sahne {scenes.Count + 1}" });
+
+            // 2. Adım: Kareleri OpenCvSharp ile karşılaştır
+            Mat? previousHist = null;
+            var threshold = 0.7; // Eşik değeri. Bu değeri projenin ihtiyacına göre ayarlayabilirsin.
+
+            for (int i = 0; i < frameFiles.Count; i++)
+            {
+                using var frame = Cv2.ImRead(frameFiles[i]);
+                if (frame.Empty()) continue;
+
+                // Renk histogramını hesapla
+                using var hist = new Mat();
+                int[] channels = { 0, 1, 2 }; // Tüm BGR kanalları
+                int[] histSize = { 8, 8, 8 }; // Her kanal için 8 aralık
+                Rangef[] ranges = { new Rangef(0, 256), new Rangef(0, 256), new Rangef(0, 256) };
+                Cv2.CalcHist(new[] { frame }, channels, null, hist, 3, histSize, ranges);
+                Cv2.Normalize(hist, hist, 0, 1, NormTypes.MinMax);
+
+                if (previousHist != null)
+                {
+                    // İki histogram arasındaki farkı (korelasyon) hesapla
+                    double comparison = Cv2.CompareHist(previousHist, hist, HistCompMethods.Correl);
+
+                    // Eğer fark eşik değerden büyükse (korelasyon düşükse) yeni bir sahne tespit ettik demektir.
+                    if (comparison < threshold)
+                    {
+                        // i, saniye cinsinden zamanı temsil eder (çünkü saniyede 1 kare aldık)
+                        scenes.Last().EndTime = i; // Önceki sahneyi bitir
+                        scenes.Add(new Scene { StartTime = i, Title = $"Sahne {scenes.Count + 1}" });
+                        
+                        _logger.LogDebug("Job {JobId}: New scene detected at {Time}s (correlation: {Correlation:F3})", 
+                            jobId, i, comparison);
+                    }
+                }
+                
+                previousHist?.Dispose();
+                previousHist = hist.Clone();
+            }
+
+            // Son sahnenin bitiş zamanını ayarla
+            if (scenes.Any())
+            {
+                scenes.Last().EndTime = frameFiles.Count;
+            }
+            
+            previousHist?.Dispose();
+
+            _logger.LogInformation("Job {JobId}: Detected {Count} scenes", jobId, scenes.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Job {JobId}: Error during scene detection", jobId);
+            throw;
+        }
+        finally
+        {
+            // 3. Adım: Geçici dosyaları temizle
+            try
+            {
+                if (Directory.Exists(framesPath))
+                {
+                    Directory.Delete(framesPath, true);
+                    _logger.LogInformation("Job {JobId}: Temporary frames directory deleted: {FramesPath}", jobId, framesPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Job {JobId}: Failed to delete temporary frames directory: {FramesPath}", jobId, framesPath);
+            }
+        }
+
+        return scenes;
+    }
+

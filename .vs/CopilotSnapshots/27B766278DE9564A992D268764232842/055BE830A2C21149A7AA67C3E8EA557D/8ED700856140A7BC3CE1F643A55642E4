@@ -1,0 +1,32 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "allofthesestarshaveareason": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  
+  "Whisper": {
+    "ModelPath": "models/ggml-base.bin",
+    "ModelType": "base",
+    "DefaultLanguage": null
+  },
+  
+  "FileStorage": {
+    "UploadDirectory": "uploads",
+    "MaxFileSizeMB": 500,
+    "AllowedExtensions": [ ".mp4", ".avi", ".mov", ".mkv", ".webm" ]
+  },
+  
+  "SceneDetection": {
+    "DefaultThreshold": 0.7,
+    "FramesPerSecond": 1
+  },
+  
+  "FFmpeg": {
+    "ExecutablePath": null,
+    "AudioExtractionArgs": "-vn -acodec pcm_s16le -ar 16000 -ac 1"
+  }
+}

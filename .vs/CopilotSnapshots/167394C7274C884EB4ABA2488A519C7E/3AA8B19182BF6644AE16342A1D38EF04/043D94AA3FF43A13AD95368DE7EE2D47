@@ -1,0 +1,39 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using allofthesestarshaveareason.Services;
+
+[Route("api/[controller]")]
+[ApiController]
+public class VideoAnalysisController : ControllerBase
+{
+    private readonly IAnalysisService _analysisService;
+
+    public VideoAnalysisController(IAnalysisService analysisService)
+    {
+        _analysisService = analysisService;
+    }
+
+
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadVideo(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("PLEASE CHOOSE VIDEO.");
+        }
+
+
+        try
+        {
+            var jobId = await _analysisService.StartAnalysisJobAsync(file);
+
+            return Accepted(new { JobId = jobId });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"AN ERROR OCCURED: {ex.Message}");
+        }
+    }
+
+
+}

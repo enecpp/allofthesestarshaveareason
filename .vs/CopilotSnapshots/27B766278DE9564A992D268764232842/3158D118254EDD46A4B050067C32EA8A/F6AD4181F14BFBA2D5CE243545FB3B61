@@ -1,0 +1,68 @@
+﻿namespace allofthesestarshaveareason.DTOs;
+
+/// <summary>
+/// Video analiz işi oluşturma isteği
+/// </summary>
+public class CreateAnalysisJobRequest
+{
+    public required IFormFile VideoFile { get; init; }
+    public string? Language { get; init; }
+    public double SceneDetectionThreshold { get; init; } = 0.7;
+}
+
+/// <summary>
+/// Video analiz işi yanıtı
+/// </summary>
+public class CreateAnalysisJobResponse
+{
+    public required string JobId { get; init; }
+    public required string Status { get; init; }
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+}
+
+/// <summary>
+/// Analiz durumu yanıtı
+/// </summary>
+public class AnalysisStatusResponse
+{
+    public required string JobId { get; init; }
+    public required string Status { get; init; }
+    public int Progress { get; init; }
+    public int? ResultId { get; init; }
+    public DateTime? CompletedAt { get; init; }
+    public string? ErrorMessage { get; init; }
+}
+
+/// <summary>
+/// Analiz sonuç yanıtı
+/// </summary>
+public class AnalysisResultResponse
+{
+    public required string JobId { get; init; }
+    public int ResultId { get; init; }
+    public required IReadOnlyList<TranscriptSegmentDto> Transcript { get; init; }
+    public required IReadOnlyList<SceneDto> Scenes { get; init; }
+    public DateTime CompletedAt { get; init; }
+}
+
+/// <summary>
+/// Transkript segment DTO
+/// </summary>
+public class TranscriptSegmentDto
+{
+    public double StartTime { get; init; }
+    public double EndTime { get; init; }
+    public required string Text { get; init; }
+    public required string Speaker { get; init; }
+}
+
+/// <summary>
+/// Sahne DTO
+/// </summary>
+public class SceneDto
+{
+    public required string Title { get; init; }
+    public double StartTime { get; init; }
+    public double EndTime { get; init; }
+    public string? Description { get; init; }
+}

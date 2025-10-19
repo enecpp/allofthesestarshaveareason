@@ -1,0 +1,628 @@
+﻿using System.Diagnostics;
+using Whisper.net;
+using Whisper.net.Ggml;
+using static Whisper.net.Ggml.WhisperGgmlDownloader;
+
+namespace allofthesestarshaveareason.Services;
+
+public interface IAnalysisService
+{
+    Task<string> StartAnalysisJobAsync(IFormFile file);
+    Task<AnalysisStatus> GetAnalysisStatusAsync(string jobId);
+}
+
+public class AnalysisStatus
+{
+    public string Status { get; set; } = string.Empty;
+    public int Progress { get; set; }
+    public int? ResultId { get; set; }
+    public List<TranscriptSegment>? Transcript { get; set; }
+}
+
+public class TranscriptSegment
+{
+    public double StartTime { get; set; }
+    public double EndTime { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public string Speaker { get; set; } = "Narrator";
+}
+
+public class AnalysisService : IAnalysisService
+{
+    private static readonly Dictionary<string, AnalysisStatus> _jobs = new();
+    private readonly ILogger<AnalysisService> _logger;
+    private readonly string _whisperModelPath;
+
+    public AnalysisService(ILogger<AnalysisService> logger, IConfiguration configuration)
+    {
+        _logger = logger;
+        // appsettings.json'dan model yolunu oku, yoksa varsayılan kullan
+        _whisperModelPath = configuration["Whisper:ModelPath"] ?? "models/ggml-base.bin";
+    }
+
+    public async Task<string> StartAnalysisJobAsync(IFormFile file)
+    {
+        var jobId = Guid.NewGuid().ToString();
+
+        var uploadDirectory = "uploads";
+        if (!Directory.Exists(uploadDirectory))
+        {
+            Directory.CreateDirectory(uploadDirectory);
+        }
+
+        var filePath = Path.Combine(uploadDirectory, $"{jobId}_{file.FileName}");
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        _jobs[jobId] = new AnalysisStatus { Status = "Sırada", Progress = 0 };
+
+        _ = Task.Run(() => ProcessVideoInBackground(jobId, filePath));
+
+        return jobId;
+    }
+
+    public Task<AnalysisStatus> GetAnalysisStatusAsync(string jobId)
+    {
+        _jobs.TryGetValue(jobId, out var status);
+        return Task.FromResult(status ?? new AnalysisStatus { Status = "Bulunamadı", Progress = 0 });
+    }
+
+    private async Task ProcessVideoInBackground(string jobId, string filePath)
+    {
+        string? audioPath = null;
+        try
+        {
+            // 1. FFmpeg ile sesi ayıkla
+            _jobs[jobId].Status = "Ses ayıklanıyor...";
+            _jobs[jobId].Progress = 10;
+            _logger.LogInformation("Job {JobId}: Extracting audio from video...", jobId);
+            
+            audioPath = await ExtractAudioAsync(filePath, jobId);
+            _logger.LogInformation("Job {JobId}: Audio extracted to {AudioPath}", jobId, audioPath);
+
+            // 2. Whisper ile konuşmayı metne çevir
+            _jobs[jobId].Status = "Konuşma metne çevriliyor...";
+            _jobs[jobId].Progress = 30;
+            _logger.LogInformation("Job {JobId}: Generating transcript...", jobId);
+            
+            var transcript = await GenerateTranscriptAsync(audioPath, jobId);
+            _jobs[jobId].Transcript = transcript;
+            _logger.LogInformation("Job {JobId}: Transcript generated with {Count} segments", jobId, transcript.Count);
+
+            // 3. Sahne tespiti yap
+            _jobs[jobId].Status = "Sahneler tespit ediliyor...";
+            _jobs[jobId].Progress = 70;
+            _logger.LogInformation("Job {JobId}: Detecting scenes...", jobId);
+            
+            // TODO: Sahne tespiti implementasyonu
+            await Task.Delay(2000);
+
+            // 4. Sonuçları veritabanına kaydet
+            _jobs[jobId].Status = "Sonuçlar kaydediliyor...";
+            _jobs[jobId].Progress = 90;
+            _logger.LogInformation("Job {JobId}: Saving results...", jobId);
+            
+            // TODO: Veritabanı kaydı
+            await Task.Delay(1000);
+
+            _jobs[jobId].Status = "Tamamlandı";
+            _jobs[jobId].Progress = 100;
+            _jobs[jobId].ResultId = 123;
+            
+            _logger.LogInformation("Job {JobId}: Processing completed successfully", jobId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Job {JobId}: Error occurred during processing", jobId);
+            _jobs[jobId].Status = $"Hata Oluştu: {ex.Message}";
+            _jobs[jobId].Progress = 100;
+        }
+        finally
+        {
+            // Temizlik: Geçici ses dosyasını sil
+            if (!string.IsNullOrEmpty(audioPath) && File.Exists(audioPath))
+            {
+                try
+                {
+                    File.Delete(audioPath);
+                    _logger.LogInformation("Job {JobId}: Temporary audio file deleted: {AudioPath}", jobId, audioPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Job {JobId}: Failed to delete temporary audio file: {AudioPath}", jobId, audioPath);
+                }
+            }
+        }
+    }
+
+    private async Task<string> ExtractAudioAsync(string videoPath, string jobId)
+    {
+        var audioPath = Path.Combine("uploads", $"{jobId}.wav");
+        
+        // FFmpeg'in sistem PATH'inde olup olmadığını kontrol et
+        var ffmpegPath = FindFFmpegPath();
+        
+        if (string.IsNullOrEmpty(ffmpegPath))
+        {
+            throw new FileNotFoundException(
+                "FFmpeg bulunamadı! FFmpeg'i indirip sistem PATH'ine ekleyin veya proje klasörüne koyun. " +
+                "İndirme: https://ffmpeg.org/download.html");
+        }
+
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = ffmpegPath,
+            Arguments = $"-i \"{videoPath}\" -vn -acodec pcm_s16le -ar 16000 -ac 1 \"{audioPath}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = processStartInfo };
+        process.Start();
+
+        string output = await process.StandardOutput.ReadToEndAsync();
+        string error = await process.StandardError.ReadToEndAsync();
+        
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0)
+        {
+            _logger.LogError("FFmpeg error output: {Error}", error);
+            throw new Exception($"FFmpeg başarısız oldu (exit code {process.ExitCode}). Detaylar için loglara bakın.");
+        }
+
+        if (!File.Exists(audioPath))
+        {
+            throw new Exception($"Ses dosyası oluşturulamadı: {audioPath}");
+        }
+
+        return audioPath;
+    }
+
+    private async Task<List<TranscriptSegment>> GenerateTranscriptAsync(string audioPath, string jobId)
+    {
+        var transcript = new List<TranscriptSegment>();
+
+        try
+        {
+            // Model dosyasının varlığını kontrol et
+            if (!File.Exists(_whisperModelPath))
+            {
+                _logger.LogWarning("Whisper model not found at {ModelPath}. Attempting to download...", _whisperModelPath);
+                await DownloadWhisperModelAsync();
+            }
+
+            // Whisper factory oluştur
+            using var whisperFactory = WhisperFactory.FromPath(_whisperModelPath);
+            
+            // Processor'u oluştur
+            using var processor = whisperFactory.CreateBuilder()
+                .WithLanguage("auto") // Otomatik dil algılama (veya "tr" için Türkçe)
+                .Build();
+
+            // Ses dosyasını işle
+            using var fileStream = File.OpenRead(audioPath);
+            await foreach (var result in processor.ProcessAsync(fileStream))
+            {
+                var segment = new TranscriptSegment
+                {
+                    StartTime = result.Start.TotalSeconds,
+                    EndTime = result.End.TotalSeconds,
+                    Text = result.Text.Trim(),
+                    Speaker = "Narrator" // TODO: Speaker diarization eklenebilir
+                };
+
+                transcript.Add(segment);
+                
+                _logger.LogDebug("Job {JobId}: Segment [{Start} - {End}]: {Text}", 
+                    jobId, 
+                    result.Start.ToString(@"mm\:ss"), 
+                    result.End.ToString(@"mm\:ss"), 
+                    segment.Text);
+            }
+
+            return transcript;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Job {JobId}: Error generating transcript from {AudioPath}", jobId, audioPath);
+            throw new Exception($"Transkript oluşturma hatası: {ex.Message}", ex);
+        }
+    }
+
+    private async Task DownloadWhisperModelAsync()
+    {
+        var modelDirectory = Path.GetDirectoryName(_whisperModelPath);
+        if (!string.IsNullOrEmpty(modelDirectory) && !Directory.Exists(modelDirectory))
+        {
+            Directory.CreateDirectory(modelDirectory);
+        }
+
+        _logger.LogInformation("Downloading Whisper model to {ModelPath}...", _whisperModelPath);
+
+        // Whisper.NET ile otomatik model indirme
+        using var modelStream = await WhisperGgmlDownloader.Instance.GetGgmlModelAsync(GgmlType.Base);
+        using var fileWriter = File.OpenWrite(_whisperModelPath);
+        await modelStream.CopyToAsync(fileWriter);
+
+        _logger.LogInformation("Whisper model downloaded successfully");
+    }
+
+    private string? FindFFmpegPath()
+    {
+        // 1. Proje klasöründe ffmpeg.exe'yi ara
+        var localPaths = new[]
+        {
+            "ffmpeg.exe",
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe"),
+            Path.Combine(Directory.GetCurrentDirectory(), "ffmpeg.exe"),
+            Path.Combine(Directory.GetCurrentDirectory(), "tools", "ffmpeg.exe")
+        };
+
+        foreach (var path in localPaths)
+        {
+            if (File.Exists(path))
+            {
+                _logger.LogInformation("FFmpeg found at: {Path}", path);
+                return path;
+            }
+        }
+
+        // 2. Sistem PATH'inde ara
+        try
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                Arguments = "-version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(processStartInfo);
+            if (process != null)
+            {
+                process.WaitForExit();
+                if (process.ExitCode == 0)
+                {
+                    _logger.LogInformation("FFmpeg found in system PATH");
+                    return "ffmpeg";
+                }
+            }
+        }
+        catch
+        {
+            // FFmpeg sistem PATH'inde değil
+        }
+
+        _logger.LogWarning("FFmpeg not found in local directory or system PATH");
+        return null;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
