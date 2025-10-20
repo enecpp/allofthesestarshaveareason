@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("allofthesestarshaveareason")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+708dd1166fd7ecbba10de083c39502388e85918e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ca6c7f116f81060e001eb2002e5b7e2c0c5eae1")]
 [assembly: System.Reflection.AssemblyProductAttribute("allofthesestarshaveareason")]
 [assembly: System.Reflection.AssemblyTitleAttribute("allofthesestarshaveareason")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

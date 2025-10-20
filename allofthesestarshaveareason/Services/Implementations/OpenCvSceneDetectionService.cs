@@ -19,6 +19,13 @@ public class OpenCvSceneDetectionService : ISceneDetectionService
         IProgress<int>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(framePaths);
+        
+        if (threshold is < 0 or > 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(threshold), "Threshold must be between 0 and 1");
+        }
+
         if (framePaths.Count < 2)
         {
             _logger.LogWarning("Not enough frames for scene detection. Frame count: {Count}", framePaths.Count);
@@ -28,7 +35,9 @@ public class OpenCvSceneDetectionService : ISceneDetectionService
         _logger.LogInformation("Starting scene detection with {Count} frames and threshold {Threshold}", 
             framePaths.Count, threshold);
 
-        return await Task.Run(() => DetectScenesInternal(framePaths, threshold, progress, cancellationToken), cancellationToken);
+        return await Task.Run(() => 
+            DetectScenesInternal(framePaths, threshold, progress, cancellationToken), 
+            cancellationToken).ConfigureAwait(false);
     }
 
     private List<Scene> DetectScenesInternal(
@@ -39,7 +48,7 @@ public class OpenCvSceneDetectionService : ISceneDetectionService
     {
         var scenes = new List<Scene>
         {
-            new Scene
+            new()
             {
                 StartTime = 0,
                 Title = "Sahne 1",
@@ -48,6 +57,7 @@ public class OpenCvSceneDetectionService : ISceneDetectionService
         };
 
         Mat? previousHist = null;
+        var processedFrames = 0;
 
         try
         {
@@ -55,66 +65,105 @@ public class OpenCvSceneDetectionService : ISceneDetectionService
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                using var frame = Cv2.ImRead(framePaths[i]);
-                if (frame.Empty())
+                try
                 {
-                    _logger.LogWarning("Empty frame at index {Index}: {Path}", i, framePaths[i]);
+                    using var frame = Cv2.ImRead(framePaths[i]);
+                    
+                    if (frame.Empty())
+                    {
+                        _logger.LogWarning("Empty frame at index {Index}: {Path}", i, framePaths[i]);
+                        continue;
+                    }
+
+                    using var currentHist = ComputeColorHistogram(frame);
+
+                    if (previousHist != null)
+                    {
+                        var correlation = Cv2.CompareHist(previousHist, currentHist, HistCompMethods.Correl);
+
+                        if (correlation < threshold)
+                        {
+                            // Yeni sahne tespit edildi
+                            scenes[^1].EndTime = i;
+                            scenes.Add(new Scene
+                            {
+                                StartTime = i,
+                                Title = $"Sahne {scenes.Count + 1}",
+                                Description = string.Empty
+                            });
+
+                            _logger.LogDebug("New scene detected at frame {FrameIndex} (correlation: {Correlation:F3})",
+                                i, correlation);
+                        }
+                    }
+
+                    // Güvenli bir þekilde önceki histogram'ý dispose et ve yenisini kopyala
+                    previousHist?.Dispose();
+                    previousHist = currentHist.Clone();
+                    
+                    processedFrames++;
+                    progress?.Report((i + 1) * 100 / framePaths.Count);
+                }
+                catch (OpenCVException ex)
+                {
+                    _logger.LogError(ex, "OpenCV error processing frame at index {Index}: {Path}", i, framePaths[i]);
+                    // Hatalý frame'i atla ve devam et
                     continue;
                 }
-
-                using var hist = ComputeColorHistogram(frame);
-
-                if (previousHist != null)
+                catch (Exception ex)
                 {
-                    var correlation = Cv2.CompareHist(previousHist, hist, HistCompMethods.Correl);
-
-                    if (correlation < threshold)
-                    {
-                        // Yeni sahne tespit edildi
-                        scenes[^1].EndTime = i;
-                        scenes.Add(new Scene
-                        {
-                            StartTime = i,
-                            Title = $"Sahne {scenes.Count + 1}",
-                            Description = string.Empty
-                        });
-
-                        _logger.LogDebug("New scene detected at {Time}s (correlation: {Correlation:F3})",
-                            i, correlation);
-                    }
+                    _logger.LogError(ex, "Unexpected error processing frame at index {Index}: {Path}", i, framePaths[i]);
+                    // Kritik olmayan hatalarý atla
+                    continue;
                 }
-
-                previousHist?.Dispose();
-                previousHist = hist.Clone();
-
-                progress?.Report(i + 1);
             }
 
             // Son sahnenin bitiþ zamanýný ayarla
-            if (scenes.Count > 0)
+            if (scenes.Count > 0 && scenes[^1].EndTime == 0)
             {
                 scenes[^1].EndTime = framePaths.Count;
             }
 
-            _logger.LogInformation("Scene detection completed. Detected {Count} scenes", scenes.Count);
+            _logger.LogInformation(
+                "Scene detection completed. Detected {SceneCount} scenes from {ProcessedFrames}/{TotalFrames} frames", 
+                scenes.Count, processedFrames, framePaths.Count);
+            
             return scenes;
         }
         finally
         {
+            // Cleanup: son histogram'ý dispose et
             previousHist?.Dispose();
         }
     }
 
     private static Mat ComputeColorHistogram(Mat frame)
     {
+        ArgumentNullException.ThrowIfNull(frame);
+        
+        if (frame.Empty())
+        {
+            throw new ArgumentException("Frame cannot be empty", nameof(frame));
+        }
+
         var hist = new Mat();
-        int[] channels = { 0, 1, 2 };
-        int[] histSize = { 8, 8, 8 };
-        Rangef[] ranges = { new(0, 256), new(0, 256), new(0, 256) };
         
-        Cv2.CalcHist(new[] { frame }, channels, null, hist, 3, histSize, ranges);
-        Cv2.Normalize(hist, hist, 0, 1, NormTypes.MinMax);
-        
-        return hist;
+        try
+        {
+            int[] channels = [0, 1, 2];
+            int[] histSize = [8, 8, 8];
+            Rangef[] ranges = [new(0, 256), new(0, 256), new(0, 256)];
+            
+            Cv2.CalcHist([frame], channels, null, hist, 3, histSize, ranges);
+            Cv2.Normalize(hist, hist, 0, 1, NormTypes.MinMax);
+            
+            return hist;
+        }
+        catch
+        {
+            // Hata durumunda hist'i dispose et
+            hist?.Dispose();
+            throw;
+        }
     }
 }

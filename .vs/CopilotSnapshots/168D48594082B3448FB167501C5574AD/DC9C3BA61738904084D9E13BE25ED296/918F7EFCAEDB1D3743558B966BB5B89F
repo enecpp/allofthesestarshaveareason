@@ -1,0 +1,54 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using allofthesestarshaveareason.Services;
+
+namespace allofthesestarshaveareason.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class VideoAnalysisController : ControllerBase
+{
+    private readonly IAnalysisService _analysisService;
+
+    public VideoAnalysisController(IAnalysisService analysisService)
+    {
+        _analysisService = analysisService;
+    }
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadVideo(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("PLEASE CHOOSE VIDEO.");
+        }
+
+        try
+        {
+            var jobId = await _analysisService.StartAnalysisJobAsync(file);
+
+            return Accepted(new { JobId = jobId });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"AN ERROR OCCURED: {ex.Message}");
+        }
+    }
+    
+    [HttpGet("{resultId}/search")]
+    public async Task<IActionResult> SearchInVideo(int resultId, [FromQuery] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return BadRequest("Arama metni boş olamaz.");
+        }
+
+        var dummyResults = new List<object>
+        {
+            new { Time = "00:34", Text = $"'{query}' kelimesini içeren bir cümle." },
+            new { Time = "01:12", Text = $"'{query}' hakkında başka bir nokta." }
+        };
+        return Ok(await Task.FromResult(dummyResults));
+    }
+}
+
+

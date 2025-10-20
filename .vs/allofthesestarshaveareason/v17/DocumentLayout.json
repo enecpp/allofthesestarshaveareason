@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\services\\implementations\\onnxtextanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\services\\implementations\\onnxtextanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\controllers\\videoanalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\controllers\\videoanalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "VideoAnalysisController.cs",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
+              "RelativeToolTip": "allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIMAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T19:26:49.091Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "OnnxTextAnalysisService.cs",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
+              "RelativeToolTip": "allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
+              "ViewState": "AgIAAMUAAAAAAAAAAAAiwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T19:23:40.407Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

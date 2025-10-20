@@ -1,39 +1,150 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using allofthesestarshaveareason.Services;
 
+namespace allofthesestarshaveareason.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
-public class VideoAnalysisController : ControllerBase
+public class VideoAnalysisController(
+    IAnalysisService analysisService,
+    ILogger<VideoAnalysisController> logger) : ControllerBase
 {
-    private readonly IAnalysisService _analysisService;
-
-    public VideoAnalysisController(IAnalysisService analysisService)
-    {
-        _analysisService = analysisService;
-    }
-
-
-
     [HttpPost("upload")]
     public async Task<IActionResult> UploadVideo(IFormFile file)
     {
         if (file == null || file.Length == 0)
         {
-            return BadRequest("PLEASE CHOOSE VIDEO.");
+            logger.LogWarning("Upload attempt with empty file");
+            return BadRequest(new { error = "Please choose a video file." });
         }
 
+        var allowedExtensions = new[] { ".mp4", ".avi", ".mov", ".mkv", ".webm" };
+        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            logger.LogWarning("Invalid file type: {FileExtension}", fileExtension);
+            return BadRequest(new { error = $"Invalid file type. Allowed types: {string.Join(", ", allowedExtensions)}" });
+        }
+
+        if (file.Length > 500 * 1024 * 1024)
+        {
+            logger.LogWarning("File too large: {FileSize} bytes", file.Length);
+            return BadRequest(new { error = "File size exceeds maximum limit of 500MB." });
+        }
 
         try
         {
-            var jobId = await _analysisService.StartAnalysisJobAsync(file);
+            var jobId = await analysisService.StartAnalysisJobAsync(file).ConfigureAwait(false);
+            logger.LogInformation("Analysis job started: {JobId} for file: {FileName}", jobId, file.FileName);
 
-            return Accepted(new { JobId = jobId });
+            return Accepted(new 
+            { 
+                jobId,
+                message = "Video upload successful. Analysis started.",
+                statusUrl = $"/api/VideoAnalysis/status/{jobId}"
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for file: {FileName}", file.FileName);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogWarning(ex, "Invalid operation for file: {FileName}", file.FileName);
+            return BadRequest(new { error = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"AN ERROR OCCURED: {ex.Message}");
+            logger.LogError(ex, "Error starting analysis for file: {FileName}", file.FileName);
+            return StatusCode(500, new { error = "An error occurred while processing your video." });
         }
     }
 
+    [HttpGet("status/{jobId}")]
+    public async Task<IActionResult> GetAnalysisStatus(string jobId)
+    {
+        if (string.IsNullOrWhiteSpace(jobId))
+        {
+            return BadRequest(new { error = "Job ID is required." });
+        }
 
+        try
+        {
+            var status = await analysisService.GetAnalysisStatusAsync(jobId).ConfigureAwait(false);
+            
+            if (status == null || status.Status == "Bulunamadı")
+            {
+                logger.LogWarning("Job not found: {JobId}", jobId);
+                return NotFound(new { error = "Job not found.", jobId });
+            }
+
+            return Ok(new
+            {
+                jobId,
+                status.Status,
+                status.Progress,
+                status.ResultId,
+                status.Transcript,
+                status.Scenes
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for job: {JobId}", jobId);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting status for job: {JobId}", jobId);
+            return StatusCode(500, new { error = "An error occurred while retrieving job status." });
+        }
+    }
+    
+    [HttpGet("results/{resultId}/search")]
+    public async Task<IActionResult> SearchInVideo(int resultId, [FromQuery] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return BadRequest(new { error = "Search query cannot be empty." });
+        }
+
+        if (query.Length < 3)
+        {
+            return BadRequest(new { error = "Search query must be at least 3 characters long." });
+        }
+
+        try
+        {
+            logger.LogInformation("Searching in video result {ResultId} for query: {Query}", resultId, query);
+
+            
+            var dummyResults = await Task.FromResult(new List<object>
+            {
+                new { time = "00:34", text = $"'{query}' kelimesini içeren bir cümle.", relevanceScore = 0.95 },
+                new { time = "01:12", text = $"'{query}' hakkında başka bir nokta.", relevanceScore = 0.87 }
+            }).ConfigureAwait(false);
+
+            return Ok(new
+            {
+                resultId,
+                query,
+                resultsCount = dummyResults.Count,
+                results = dummyResults
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for search in result: {ResultId}", resultId);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error searching in video result: {ResultId} with query: {Query}", resultId, query);
+            return StatusCode(500, new { error = "An error occurred while searching." });
+        }
+    }
 }
+
+

@@ -10,6 +10,7 @@
         "dependencies": {
           "Microsoft.ML.DataView": "4.0.2",
           "Microsoft.ML.OnnxRuntime": "1.23.1",
+          "Microsoft.ML.Tokenizers": "1.0.2",
           "MudBlazor": "8.13.0",
           "OpenCvSharp4": "4.11.0.20250507",
           "OpenCvSharp4.Windows": "4.11.0.20250507",
@@ -19,6 +20,14 @@
         },
         "runtime": {
           "allofthesestarshaveareason.dll": {}
+        }
+      },
+      "Google.Protobuf/3.27.1": {
+        "runtime": {
+          "lib/net5.0/Google.Protobuf.dll": {
+            "assemblyVersion": "3.27.1.0",
+            "fileVersion": "3.27.1.0"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.12": {
@@ -266,6 +275,18 @@
           }
         }
       },
+      "Microsoft.ML.Tokenizers/1.0.2": {
+        "dependencies": {
+          "Google.Protobuf": "3.27.1",
+          "System.Text.Json": "8.0.5"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.ML.Tokenizers.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.225.12505"
+          }
+        }
+      },
       "MudBlazor/8.13.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.12",
@@ -343,6 +364,7 @@
           }
         }
       },
+      "System.Text.Json/8.0.5": {},
       "Whisper.net/1.8.1": {
         "runtime": {
           "lib/net8.0/Whisper.net.dll": {
@@ -359,6 +381,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Google.Protobuf/3.27.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7IVz9TzhYCZ8qY0rPhXUnyJSXYdshUqmmxmTI763XmDDSJJFnyfKH43FFcMJu/CZgBcE98xlFztrKwhzcRkiPg==",
+      "path": "google.protobuf/3.27.1",
+      "hashPath": "google.protobuf.3.27.1.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authorization/8.0.12": {
       "type": "package",
@@ -479,6 +508,13 @@
       "path": "microsoft.ml.onnxruntime.managed/1.23.1",
       "hashPath": "microsoft.ml.onnxruntime.managed.1.23.1.nupkg.sha512"
     },
+    "Microsoft.ML.Tokenizers/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-MefL5+IakSE/CWzx4BQQairgY1fXFBVTPtnn7/01Wngsk2248loViqQ1M5+YB8KBwbi0HjcfoMo86h+cSjiEOA==",
+      "path": "microsoft.ml.tokenizers/1.0.2",
+      "hashPath": "microsoft.ml.tokenizers.1.0.2.nupkg.sha512"
+    },
     "MudBlazor/8.13.0": {
       "type": "package",
       "serviceable": true,
@@ -541,6 +577,13 @@
       "sha512": "sha512-hyJB4UlpAi19Xr9AXzu2NuagKC4lPfHObNMEAA0HmqFz2rX7wKgzeYzO/jM/eBHDhnUGFFEjk5cOoJaxqg5J4A==",
       "path": "system.numerics.tensors/9.0.0",
       "hashPath": "system.numerics.tensors.9.0.0.nupkg.sha512"
+    },
+    "System.Text.Json/8.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0f1B50Ss7rqxXiaBJyzUu9bWFOO2/zSlifZ/UNMdiIpDYe4cY4LQQicP4nirK1OS31I43rn062UIJ1Q9bpmHpg==",
+      "path": "system.text.json/8.0.5",
+      "hashPath": "system.text.json.8.0.5.nupkg.sha512"
     },
     "Whisper.net/1.8.1": {
       "type": "package",

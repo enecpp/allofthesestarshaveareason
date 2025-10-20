@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "29hWz3O92tA=",
+  "dgSpecHash": "gI+ElcXiY54=",
   "success": true,
-  "projectFilePath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
+  "projectFilePath": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\eneso\\.nuget\\packages\\google.protobuf\\3.27.1\\google.protobuf.3.27.1.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.12\\microsoft.aspnetcore.authorization.8.0.12.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.12\\microsoft.aspnetcore.components.8.0.12.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\8.0.12\\microsoft.aspnetcore.components.analyzers.8.0.12.nupkg.sha512",
@@ -21,6 +22,7 @@
     "C:\\Users\\eneso\\.nuget\\packages\\microsoft.ml.dataview\\4.0.2\\microsoft.ml.dataview.4.0.2.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\microsoft.ml.onnxruntime\\1.23.1\\microsoft.ml.onnxruntime.1.23.1.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\microsoft.ml.onnxruntime.managed\\1.23.1\\microsoft.ml.onnxruntime.managed.1.23.1.nupkg.sha512",
+    "C:\\Users\\eneso\\.nuget\\packages\\microsoft.ml.tokenizers\\1.0.2\\microsoft.ml.tokenizers.1.0.2.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\mudblazor\\8.13.0\\mudblazor.8.13.0.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\opencvsharp4\\4.11.0.20250507\\opencvsharp4.4.11.0.20250507.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\opencvsharp4.runtime.win\\4.11.0.20250507\\opencvsharp4.runtime.win.4.11.0.20250507.nupkg.sha512",
@@ -30,6 +32,7 @@
     "C:\\Users\\eneso\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\system.memory\\4.6.3\\system.memory.4.6.3.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\system.numerics.tensors\\9.0.0\\system.numerics.tensors.9.0.0.nupkg.sha512",
+    "C:\\Users\\eneso\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\whisper.net\\1.8.1\\whisper.net.1.8.1.nupkg.sha512",
     "C:\\Users\\eneso\\.nuget\\packages\\whisper.net.runtime\\1.8.1\\whisper.net.runtime.1.8.1.nupkg.sha512"
   ],

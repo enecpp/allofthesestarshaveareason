@@ -1,6 +1,43 @@
 [
   {
-    "ContainingType": "VideoAnalysisController",
+    "ContainingType": "allofthesestarshaveareason.Controllers.VideoAnalysisController",
+    "Method": "SearchInVideo",
+    "RelativePath": "api/VideoAnalysis/results/{resultId}/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "resultId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "query",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "allofthesestarshaveareason.Controllers.VideoAnalysisController",
+    "Method": "GetAnalysisStatus",
+    "RelativePath": "api/VideoAnalysis/status/{jobId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jobId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "allofthesestarshaveareason.Controllers.VideoAnalysisController",
     "Method": "UploadVideo",
     "RelativePath": "api/VideoAnalysis/upload",
     "HttpMethod": "POST",

@@ -1,0 +1,33 @@
+﻿
+
+using allofthesestarshaveareason.Services.Interfaces;
+
+public class VideoAnalysisOrchestrator : IAnalysisOrchestrator
+{
+    private readonly IFFmpegService _ffmpegService;
+    private readonly ITranscriptService _transcriptService;
+    private readonly ISceneDetectionService _sceneDetectionService;
+    private readonly ITextAnalysisService _textAnalysisService; 
+\
+    public VideoAnalysisOrchestrator(
+        IFFmpegService ffmpegService,
+        ITranscriptService transcriptService,
+        ISceneDetectionService sceneDetectionService,
+        ITextAnalysisService textAnalysisService) 
+    {
+        _ffmpegService = ffmpegService;
+        _transcriptService = transcriptService;
+        _sceneDetectionService = sceneDetectionService;
+        _textAnalysisService = textAnalysisService; 
+    }
+
+    private async Task ProcessVideoInBackground(Guid jobId, string originalFilePath)
+    {
+        var transcript = await _transcriptService.GenerateTranscriptAsync(audioPath);
+        var scenes = await _sceneDetectionService.DetectScenesAsync(originalFilePath, jobId);
+
+
+        var embeddings = await _textAnalysisService.GenerateEmbeddingsAsync(transcript);
+
+    }
+}

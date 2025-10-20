@@ -1,0 +1,38 @@
+﻿namespace allofthesestarshaveareason.Services.Implementations;
+
+using allofthesestarshaveareason.Services.Interfaces;
+
+public class VideoAnalysisOrchestrator
+{
+    private readonly IFFmpegService _ffmpegService;
+    private readonly ITranscriptService _transcriptService;
+    private readonly ISceneDetectionService _sceneDetectionService;
+    private readonly ITextAnalysisService _textAnalysisService;
+
+    public VideoAnalysisOrchestrator(
+        IFFmpegService ffmpegService,
+        ITranscriptService transcriptService,
+        ISceneDetectionService sceneDetectionService,
+        ITextAnalysisService textAnalysisService)
+    {
+        _ffmpegService = ffmpegService;
+        _transcriptService = transcriptService;
+        _sceneDetectionService = sceneDetectionService;
+        _textAnalysisService = textAnalysisService;
+    }
+
+    private async Task ProcessVideoInBackground(Guid jobId, string originalFilePath)
+    {
+        string audioPath = Path.Combine("uploads", $"{jobId}.wav");
+        await _ffmpegService.ExtractAudioAsync(originalFilePath, audioPath);
+        
+        var transcript = await _transcriptService.GenerateTranscriptAsync(audioPath);
+        
+
+        string framesDirectory = Path.Combine("uploads", $"{jobId}_frames");
+        var framePaths = await _ffmpegService.ExtractFramesAsync(originalFilePath, framesDirectory);
+        var scenes = await _sceneDetectionService.DetectScenesAsync(framePaths);
+
+
+    }
+}

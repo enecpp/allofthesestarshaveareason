@@ -21,7 +21,7 @@ builder.Services.AddSingleton<IFFmpegService, FFmpegService>();
 builder.Services.AddSingleton<ITranscriptService, WhisperTranscriptService>();
 builder.Services.AddSingleton<ISceneDetectionService, OpenCvSceneDetectionService>();
 
-builder.Services.AddScoped<IAnalysisService, VideoAnalysisOrchestrator>();
+builder.Services.AddScoped<IAnalysisService, allofthesestarshaveareason.Services.VideoAnalysisOrchestrator>();
 
 var app = builder.Build();
 

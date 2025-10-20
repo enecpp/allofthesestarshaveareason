@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {}
+    "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {}
   },
   "projects": {
-    "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {
+    "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
+        "projectUniqueName": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
         "projectName": "allofthesestarshaveareason",
-        "projectPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
+        "projectPath": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
         "packagesPath": "C:\\Users\\eneso\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\obj\\",
+        "outputPath": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -57,6 +57,10 @@
             "Microsoft.ML.OnnxRuntime": {
               "target": "Package",
               "version": "[1.23.1, )"
+            },
+            "Microsoft.ML.Tokenizers": {
+              "target": "Package",
+              "version": "[1.0.2, )"
             },
             "MudBlazor": {
               "target": "Package",
