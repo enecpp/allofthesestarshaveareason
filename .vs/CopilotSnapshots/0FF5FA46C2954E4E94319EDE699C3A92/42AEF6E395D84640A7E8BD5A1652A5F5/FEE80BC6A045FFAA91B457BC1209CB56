@@ -1,0 +1,18 @@
+﻿using allofthesestarshaveareason.Models;
+
+namespace allofthesestarshaveareason.Services.Interfaces;
+
+public interface IJobRepository
+{
+    Task<string> CreateJobAsync(CancellationToken cancellationToken = default);
+    
+    Task UpdateJobStatusAsync(string jobId, string status, int progress, CancellationToken cancellationToken = default);
+    
+    Task<AnalysisStatus?> GetJobStatusAsync(string jobId, CancellationToken cancellationToken = default);
+    
+    Task CompleteJobAsync(string jobId, int? resultId, CancellationToken cancellationToken = default);
+    
+    Task FailJobAsync(string jobId, string errorMessage, CancellationToken cancellationToken = default);
+    
+    Task SaveJobResultsAsync(string jobId, object results, CancellationToken cancellationToken = default);
+}

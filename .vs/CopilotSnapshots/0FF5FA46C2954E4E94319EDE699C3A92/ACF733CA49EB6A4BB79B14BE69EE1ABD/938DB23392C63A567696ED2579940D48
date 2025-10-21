@@ -1,0 +1,206 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div class="video-player-container">
+    <video @ref="videoElement" 
+           controls 
+           width="100%" 
+           src="@VideoUrl"
+           @ontimeupdate="OnTimeUpdate"
+           @onloadedmetadata="OnLoadedMetadata"
+           @onplay="OnPlay"
+           @onpause="OnPause"
+           @onended="OnEnded">
+        Tarayıcınız video etiketini desteklemiyor.
+    </video>
+</div>
+
+@code {
+    [Parameter]
+    public string? VideoUrl { get; set; }
+
+    [Parameter]
+    public EventCallback<double> OnTimeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<double> OnDurationLoaded { get; set; }
+
+    [Parameter]
+    public EventCallback OnVideoPlay { get; set; }
+
+    [Parameter]
+    public EventCallback OnVideoPause { get; set; }
+
+    [Parameter]
+    public EventCallback OnVideoEnded { get; set; }
+
+    private ElementReference videoElement;
+    private IJSObjectReference? module;
+    private bool isInitialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./js/videoInterop.js");
+                isInitialized = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading video interop module: {ex.Message}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Video'yu belirtilen zamana (saniye cinsinden) atlar
+    /// </summary>
+    public async Task SeekTo(double timeInSeconds)
+    {
+        if (!isInitialized || module is null)
+        {
+            Console.WriteLine("Video player not initialized yet");
+            return;
+        }
+
+        try
+        {
+            await module.InvokeVoidAsync("seekTo", videoElement, timeInSeconds);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error seeking video: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Video'yu oynatır
+    /// </summary>
+    public async Task Play()
+    {
+        if (!isInitialized || module is null) return;
+
+        try
+        {
+            await module.InvokeVoidAsync("play", videoElement);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error playing video: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Video'yu duraklattır
+    /// </summary>
+    public async Task Pause()
+    {
+        if (!isInitialized || module is null) return;
+
+        try
+        {
+            await module.InvokeVoidAsync("pause", videoElement);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error pausing video: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Mevcut oynatma zamanını (saniye cinsinden) döndürür
+    /// </summary>
+    public async Task<double> GetCurrentTime()
+    {
+        if (!isInitialized || module is null) return 0;
+
+        try
+        {
+            return await module.InvokeAsync<double>("getCurrentTime", videoElement);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting current time: {ex.Message}");
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Video süresini (saniye cinsinden) döndürür
+    /// </summary>
+    public async Task<double> GetDuration()
+    {
+        if (!isInitialized || module is null) return 0;
+
+        try
+        {
+            return await module.InvokeAsync<double>("getDuration", videoElement);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting duration: {ex.Message}");
+            return 0;
+        }
+    }
+
+    private async Task OnTimeUpdate()
+    {
+        if (OnTimeChanged.HasDelegate)
+        {
+            var currentTime = await GetCurrentTime();
+            await OnTimeChanged.InvokeAsync(currentTime);
+        }
+    }
+
+    private async Task OnLoadedMetadata()
+    {
+        if (OnDurationLoaded.HasDelegate)
+        {
+            var duration = await GetDuration();
+            await OnDurationLoaded.InvokeAsync(duration);
+        }
+    }
+
+    private async Task OnPlay()
+    {
+        if (OnVideoPlay.HasDelegate)
+        {
+            await OnVideoPlay.InvokeAsync();
+        }
+    }
+
+    private async Task OnPause()
+    {
+        if (OnVideoPause.HasDelegate)
+        {
+            await OnVideoPause.InvokeAsync();
+        }
+    }
+
+    private async Task OnEnded()
+    {
+        if (OnVideoEnded.HasDelegate)
+        {
+            await OnVideoEnded.InvokeAsync();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error disposing video player module: {ex.Message}");
+            }
+        }
+    }
+}

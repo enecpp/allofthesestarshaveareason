@@ -1,0 +1,231 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using allofthesestarshaveareason.Services;
+using allofthesestarshaveareason.Services.Interfaces;
+using allofthosestarshaveareason.DTOs;
+
+namespace allofthesestarshaveareason.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class VideoAnalysisController(
+    IAnalysisService analysisService,
+    IJobRepository jobRepository,
+    ITextAnalysisService textAnalysisService,
+    ILogger<VideoAnalysisController> logger) : ControllerBase
+{
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadVideo(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            logger.LogWarning("Upload attempt with empty file");
+            return BadRequest(new { error = "Please choose a video file." });
+        }
+
+        var allowedExtensions = new[] { ".mp4", ".avi", ".mov", ".mkv", ".webm" };
+        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            logger.LogWarning("Invalid file type: {FileExtension}", fileExtension);
+            return BadRequest(new { error = $"Invalid file type. Allowed types: {string.Join(", ", allowedExtensions)}" });
+        }
+
+        if (file.Length > 500 * 1024 * 1024)
+        {
+            logger.LogWarning("File too large: {FileSize} bytes", file.Length);
+            return BadRequest(new { error = "File size exceeds maximum limit of 500MB." });
+        }
+
+        try
+        {
+            var jobId = await analysisService.StartAnalysisJobAsync(file).ConfigureAwait(false);
+            logger.LogInformation("Analysis job started: {JobId} for file: {FileName}", jobId, file.FileName);
+
+            return Accepted(new 
+            { 
+                jobId,
+                message = "Video upload successful. Analysis started.",
+                statusUrl = $"/api/VideoAnalysis/status/{jobId}"
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for file: {FileName}", file.FileName);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogWarning(ex, "Invalid operation for file: {FileName}", file.FileName);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error starting analysis for file: {FileName}", file.FileName);
+            return StatusCode(500, new { error = "An error occurred while processing your video." });
+        }
+    }
+
+    [HttpGet("status/{jobId}")]
+    public async Task<IActionResult> GetAnalysisStatus(string jobId)
+    {
+        if (string.IsNullOrWhiteSpace(jobId))
+        {
+            return BadRequest(new { error = "Job ID is required." });
+        }
+
+        try
+        {
+            var status = await analysisService.GetAnalysisStatusAsync(jobId).ConfigureAwait(false);
+            
+            if (status == null || status.StatusMessage == "Bulunamadı")
+            {
+                logger.LogWarning("Job not found: {JobId}", jobId);
+                return NotFound(new { error = "Job not found.", jobId });
+            }
+
+            return Ok(new
+            {
+                jobId,
+                status = status.StatusMessage,
+                status.Progress,
+                status.ResultId
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for job: {JobId}", jobId);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting status for job: {JobId}", jobId);
+            return StatusCode(500, new { error = "An error occurred while retrieving job status." });
+        }
+    }
+
+    [HttpGet("result/{resultId:int}")]
+    public async Task<IActionResult> GetAnalysisResult(int resultId)
+    {
+        try
+        {
+            // 1. Veritabanından tüm ilişkili verileri çek
+            var result = await jobRepository.GetFullResultAsync(resultId);
+            if (result == null)
+            {
+                logger.LogWarning("Analysis result not found: {ResultId}", resultId);
+                return NotFound(new { error = "Analiz sonucu bulunamadı." });
+            }
+
+            // 2. Veritabanı Modellerini -> DTO'lara dönüştür (Mapping)
+            var resultDto = new VideoAnalysisResultDto
+            {
+                Id = result.Id,
+                ProcessedDate = result.ProcessedDate,
+                Transcript = result.Transcript.Select(t => new TranscriptSegmentDto
+                {
+                    Id = t.Id,
+                    Speaker = t.Speaker,
+                    Text = t.Text,
+                    StartTime = t.StartTime,
+                    EndTime = t.EndTime
+                }).ToList(),
+                Scenes = result.Scenes.Select(s => new SceneDto
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime
+                }).ToList()
+            };
+
+            // 3. Temiz DTO'yu arayüze gönder
+            logger.LogInformation("Retrieved analysis result: {ResultId}", resultId);
+            return Ok(resultDto);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving analysis result: {ResultId}", resultId);
+            return StatusCode(500, new { error = "An error occurred while retrieving the analysis result." });
+        }
+    }
+
+    [HttpGet("result/{resultId:int}/search")]
+    public async Task<IActionResult> SearchInVideo(int resultId, [FromQuery] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return BadRequest(new { error = "Arama metni boş olamaz." });
+        }
+
+        if (query.Length < 3)
+        {
+            return BadRequest(new { error = "Arama metni en az 3 karakter olmalıdır." });
+        }
+
+        try
+        {
+            logger.LogInformation("Searching in video result {ResultId} for query: {Query}", resultId, query);
+
+            // 1. Veritabanından GEREKLİ verileri çek
+            var result = await jobRepository.GetFullResultAsync(resultId);
+            if (result == null)
+            {
+                logger.LogWarning("Analysis result not found for search: {ResultId}", resultId);
+                return NotFound(new { error = "Analiz sonucu bulunamadı." });
+            }
+
+            var allSegments = result.Transcript;
+            var allEmbeddings = allSegments
+                .Where(s => s.Embedding != null)
+                .Select(s => s.Embedding!)
+                .ToList();
+
+            if (allEmbeddings.Count == 0)
+            {
+                logger.LogWarning("No embeddings found for result: {ResultId}", resultId);
+                return Ok(new
+                {
+                    resultId,
+                    query,
+                    resultsCount = 0,
+                    results = new List<TranscriptSegmentDto>()
+                });
+            }
+
+            // 2. ML servisini çağır
+            var searchResults = textAnalysisService.FindSimilarSentences(query, allSegments, allEmbeddings);
+
+            // 3. Sonuçları DTO'ya map'le
+            var searchResultDtos = searchResults.Select(t => new TranscriptSegmentDto
+            {
+                Id = t.Id,
+                Speaker = t.Speaker,
+                Text = t.Text,
+                StartTime = t.StartTime,
+                EndTime = t.EndTime
+            }).ToList();
+
+            logger.LogInformation("Found {Count} search results for query: {Query}", searchResultDtos.Count, query);
+            return Ok(new
+            {
+                resultId,
+                query,
+                resultsCount = searchResultDtos.Count,
+                results = searchResultDtos
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for search in result: {ResultId}", resultId);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error searching in video result: {ResultId} with query: {Query}", resultId, query);
+            return StatusCode(500, new { error = "An error occurred while searching." });
+        }
+    }
+}
+
+

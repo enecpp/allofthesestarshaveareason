@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\services\\implementations\\onnxtextanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\services\\implementations\\onnxtextanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\models\\sentenceembeddingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\models\\sentenceembeddingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\controllers\\videoanalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\controllers\\videoanalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\shared\\scenetimeline.readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\shared\\scenetimeline.readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|c:\\users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4C86C00C-DCE1-451D-BFBA-AA6E6CA94FF6}|allofthesestarshaveareason\\allofthesestarshaveareason.csproj|solutionrelative:allofthesestarshaveareason\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +26,55 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "VideoAnalysisController.cs",
-              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
-              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
-              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
-              "RelativeToolTip": "allofthesestarshaveareason\\Controllers\\VideoAnalysisController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIMAAAAKAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "App.razor",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\App.razor",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\App.razor",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\App.razor",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\App.razor",
+              "ViewState": "AgIAAFUAAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-21T20:00:35.482Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Program.cs",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Program.cs",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Program.cs",
+              "RelativeToolTip": "allofthesestarshaveareason\\Program.cs",
+              "ViewState": "AgIAAEQAAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-20T19:26:49.091Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-21T19:51:20.368Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SceneTimeline.README.md",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Shared\\SceneTimeline.README.md",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Components\\Shared\\SceneTimeline.README.md",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Components\\Shared\\SceneTimeline.README.md",
+              "RelativeToolTip": "allofthesestarshaveareason\\Components\\Shared\\SceneTimeline.README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-10-21T19:50:59.658Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "OnnxTextAnalysisService.cs",
-              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
-              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
-              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
-              "RelativeToolTip": "allofthesestarshaveareason\\Services\\Implementations\\OnnxTextAnalysisService.cs",
-              "ViewState": "AgIAADABAAAAAAAAAAAawAAAAAAAAAAAAAAAAA==",
+              "Title": "SentenceEmbeddingDto.cs",
+              "DocumentMoniker": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Models\\SentenceEmbeddingDto.cs",
+              "RelativeDocumentMoniker": "allofthesestarshaveareason\\Models\\SentenceEmbeddingDto.cs",
+              "ToolTip": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\Models\\SentenceEmbeddingDto.cs",
+              "RelativeToolTip": "allofthesestarshaveareason\\Models\\SentenceEmbeddingDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-20T19:23:40.407Z",
+              "WhenOpened": "2025-10-21T18:46:12.043Z",
               "EditorCaption": ""
             }
           ]

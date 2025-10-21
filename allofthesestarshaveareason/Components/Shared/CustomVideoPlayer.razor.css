@@ -1,0 +1,27 @@
+.video-player-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.video-player-container video {
+    display: block;
+    width: 100%;
+    height: auto;
+    outline: none;
+}
+
+.video-player-container video::-webkit-media-controls-panel {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Mobil uyumluluk */
+@media (max-width: 768px) {
+    .video-player-container {
+        border-radius: 0;
+    }
+}

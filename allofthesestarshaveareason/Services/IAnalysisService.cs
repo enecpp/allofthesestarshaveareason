@@ -1,3 +1,5 @@
+using allofthesestarshaveareason.Models;
+
 namespace allofthesestarshaveareason.Services;
 
 public interface IAnalysisService

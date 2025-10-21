@@ -1,0 +1,81 @@
+﻿using allofthesestarshaveareason.Components;
+using allofthesestarshaveareason.Services;
+using allofthesestarshaveareason.Services.Implementations;
+using allofthesestarshaveareason.Services.Interfaces;
+using allofthesestarshaveareason.Data;
+using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=analysis.db";
+builder.Services.AddDbContext<AnalysisDbContext>(options =>
+    options.UseSqlite(connectionString));
+    
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices();
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddControllers();
+
+// Services
+builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
+builder.Services.AddSingleton<IFFmpegService, FFmpegService>();
+builder.Services.AddSingleton<ITranscriptService, WhisperTranscriptService>();
+builder.Services.AddSingleton<ISceneDetectionService, OpenCvSceneDetectionService>();
+
+// Text Analysis Service - Lazy loading to avoid startup crash
+builder.Services.AddSingleton<ITextAnalysisService>(sp =>
+{
+    var env = sp.GetRequiredService<IWebHostEnvironment>();
+    var logger = sp.GetRequiredService<ILogger<OnnxTextAnalysisService>>();
+    
+    try
+    {
+        return new OnnxTextAnalysisService(env, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to initialize OnnxTextAnalysisService. ML features will be disabled.");
+        // Return a dummy implementation or throw based on your needs
+        throw;
+    }
+});
+
+builder.Services.AddScoped<IJobRepository, EfJobRepository>();
+builder.Services.AddScoped<IAnalysisService, allofthesestarshaveareason.Services.VideoAnalysisOrchestrator>();
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AnalysisDbContext>();
+    dbContext.Database.Migrate();
+}
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapControllers();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();
+
+

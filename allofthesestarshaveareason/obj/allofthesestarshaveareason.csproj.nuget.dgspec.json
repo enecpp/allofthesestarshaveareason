@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {}
+    "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {}
   },
   "projects": {
-    "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {
+    "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
+        "projectUniqueName": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
         "projectName": "allofthesestarshaveareason",
-        "projectPath": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
+        "projectPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\allofthesestarshaveareason.csproj",
         "packagesPath": "C:\\Users\\eneso\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\eneso\\Source\\Repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\obj\\",
+        "outputPath": "C:\\Users\\eneso\\source\\repos\\allofthesestarshaveareason\\allofthesestarshaveareason\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -50,6 +50,20 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.10, )"
+            },
             "Microsoft.ML.DataView": {
               "target": "Package",
               "version": "[4.0.2, )"

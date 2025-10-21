@@ -3,70 +3,86 @@ build_property.MudDebugAnalyzer =
 build_property.MudAllowedAttributePattern = 
 build_property.MudAllowedAttributeList = 
 build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = allofthesestarshaveareason
 build_property.RootNamespace = allofthesestarshaveareason
-build_property.ProjectDir = C:\Users\eneso\Source\Repos\allofthesestarshaveareason\allofthesestarshaveareason\
+build_property.ProjectDir = C:\Users\eneso\source\repos\allofthesestarshaveareason\allofthesestarshaveareason\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\eneso\Source\Repos\allofthesestarshaveareason\allofthesestarshaveareason
+build_property.MSBuildProjectDirectory = C:\Users\eneso\source\repos\allofthesestarshaveareason\allofthesestarshaveareason
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/App.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Analysis.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Analysis.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBbmFseXNpcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Error.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Home.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Upload.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/Upload.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVcGxvYWQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Routes.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Pages/VideoResult.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xWaWRlb1Jlc3VsdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/SceneTimeline.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcU2NlbmVUaW1lbGluZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/TranscriptView.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVHJhbnNjcmlwdFZpZXcucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/VideoPlayer.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/VideoPlayer.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVmlkZW9QbGF5ZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/_Imports.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Layout/MainLayout.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-vql27les0u
 
-[C:/Users/eneso/Source/Repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Layout/NavMenu.razor]
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-zgh84bi2br
+
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/CustomVideoPlayer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcQ3VzdG9tVmlkZW9QbGF5ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-zizppdd71l
+
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/SceneTimeline.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcU2NlbmVUaW1lbGluZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-1qh1ogqs8k
+
+[C:/Users/eneso/source/repos/allofthesestarshaveareason/allofthesestarshaveareason/Components/Shared/TranscriptView.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVHJhbnNjcmlwdFZpZXcucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-qkv1k0jdtm

@@ -1,3 +1,5 @@
+using allofthesestarshaveareason.Models;
+
 namespace allofthesestarshaveareason.Services.Interfaces;
 
 public interface IJobRepository
@@ -13,4 +15,6 @@ public interface IJobRepository
     Task FailJobAsync(string jobId, string errorMessage, CancellationToken cancellationToken = default);
     
     Task SaveJobResultsAsync(string jobId, object results, CancellationToken cancellationToken = default);
+    
+    Task<VideoAnalysisResult?> GetFullResultAsync(int resultId);
 }

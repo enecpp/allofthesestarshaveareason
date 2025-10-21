@@ -1,9 +1,0 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="/counter" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
-    <MudNavLink Href="/weather" Icon="@Icons.Material.Filled.Cloud">Weather</MudNavLink>
-    <MudDivider Class="my-2" />
-    <MudNavLink Href="/upload" Icon="@Icons.Material.Filled.CloudUpload">Upload Video</MudNavLink>
-    <MudNavLink Href="/analysis/1" Icon="@Icons.Material.Filled.VideoLibrary">Analysis Demo</MudNavLink>
-</MudNavMenu>
-

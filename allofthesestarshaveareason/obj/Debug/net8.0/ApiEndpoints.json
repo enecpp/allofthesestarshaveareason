@@ -1,8 +1,24 @@
 [
   {
     "ContainingType": "allofthesestarshaveareason.Controllers.VideoAnalysisController",
+    "Method": "GetAnalysisResult",
+    "RelativePath": "api/VideoAnalysis/result/{resultId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "resultId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "allofthesestarshaveareason.Controllers.VideoAnalysisController",
     "Method": "SearchInVideo",
-    "RelativePath": "api/VideoAnalysis/results/{resultId}/search",
+    "RelativePath": "api/VideoAnalysis/result/{resultId}/search",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

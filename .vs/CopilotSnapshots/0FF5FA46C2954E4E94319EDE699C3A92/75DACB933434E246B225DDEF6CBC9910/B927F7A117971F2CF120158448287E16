@@ -1,0 +1,65 @@
+﻿@using allofthosestarshaveareason.DTOs
+
+<MudPaper Elevation="0" Class="transcript-view-container">
+    @if (Segments != null && Segments.Any())
+    {
+        <MudList T="string" Clickable="true">
+            @foreach (var segment in Segments)
+            {
+                <MudListItem T="string" OnClick="() => SegmentClicked(segment.StartTime)" Class="transcript-segment">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-space-between align-center mb-2">
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Text">
+                                @FormatTime(segment.StartTime)
+                            </MudChip>
+                            @if (!string.IsNullOrEmpty(segment.Speaker))
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                    @segment.Speaker
+                                </MudText>
+                            }
+                        </div>
+                        <MudText Typo="Typo.body2">
+                            @segment.Text
+                        </MudText>
+                    </div>
+                </MudListItem>
+                <MudDivider />
+            }
+        </MudList>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            Görüntülenecek transkript bulunamadı.
+        </MudAlert>
+    }
+</MudPaper>
+
+@code {
+    /// <summary>
+    /// Görüntülenecek transkript segmentleri
+    /// </summary>
+    [Parameter]
+    public IEnumerable<TranscriptSegmentDto>? Segments { get; set; }
+
+    /// <summary>
+    /// Bir segment'e tıklandığında tetiklenir ve başlangıç zamanını döndürür
+    /// </summary>
+    [Parameter]
+    public EventCallback<double> OnSegmentClicked { get; set; }
+
+    private async Task SegmentClicked(double time)
+    {
+        if (OnSegmentClicked.HasDelegate)
+        {
+            await OnSegmentClicked.InvokeAsync(time);
+        }
+    }
+
+    private string FormatTime(double seconds)
+    {
+        var timeSpan = TimeSpan.FromSeconds(seconds);
+        return timeSpan.ToString(@"mm\:ss");
+    }
+}

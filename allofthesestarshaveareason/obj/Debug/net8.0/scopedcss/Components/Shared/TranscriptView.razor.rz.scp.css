@@ -1,0 +1,49 @@
+.transcript-view-container[b-qkv1k0jdtm] {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.transcript-segment[b-qkv1k0jdtm] {
+    padding: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.transcript-segment:hover[b-qkv1k0jdtm] {
+    background-color: rgba(var(--mud-palette-primary-rgb), 0.08);
+}
+
+.transcript-segment:active[b-qkv1k0jdtm] {
+    background-color: rgba(var(--mud-palette-primary-rgb), 0.12);
+}
+
+/* Scrollbar Styling */
+.transcript-view-container[b-qkv1k0jdtm]::-webkit-scrollbar {
+    width: 8px;
+}
+
+.transcript-view-container[b-qkv1k0jdtm]::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.transcript-view-container[b-qkv1k0jdtm]::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.transcript-view-container[b-qkv1k0jdtm]::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Mobil uyumluluk */
+@media (max-width: 768px) {
+    .transcript-view-container[b-qkv1k0jdtm] {
+        max-height: 400px;
+    }
+    
+    .transcript-segment[b-qkv1k0jdtm] {
+        padding: 12px;
+    }
+}

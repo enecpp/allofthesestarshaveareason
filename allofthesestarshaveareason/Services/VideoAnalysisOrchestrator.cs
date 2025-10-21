@@ -32,7 +32,13 @@ public class VideoAnalysisOrchestrator(
     public async Task<AnalysisStatus> GetAnalysisStatusAsync(string jobId)
     {
         var status = await jobRepository.GetJobStatusAsync(jobId);
-        return status ?? new AnalysisStatus { Status = "Bulunamadý", Progress = 0 };
+        return status ?? new AnalysisStatus 
+        { 
+            Id = Guid.Empty,
+            OriginalFileName = string.Empty,
+            StatusMessage = "Bulunamadý", 
+            Progress = 0 
+        };
     }
 
     private async Task ProcessVideoAsync(string jobId, string videoPath)
@@ -84,12 +90,24 @@ public class VideoAnalysisOrchestrator(
             logger.LogInformation("Job {JobId}: Scene detection completed with {Count} scenes",
                 jobId, scenes.Count);
 
+            await jobRepository.UpdateJobStatusAsync(jobId, "Embedding'ler oluþturuluyor...", 80);
+            logger.LogInformation("Job {JobId}: Creating embeddings", jobId);
+
+            // Embeddings oluþtur (þimdilik boþ, gerçek implementasyon eklenecek)
+            var embeddings = transcript.Select(_ => new SentenceEmbedding 
+            { 
+                Vector = new float[384] // Placeholder - gerçek embedding servisi eklenecek
+            }).ToList();
+
             await jobRepository.UpdateJobStatusAsync(jobId, "Sonuçlar kaydediliyor...", 90);
             logger.LogInformation("Job {JobId}: Saving results", jobId);
 
-            await jobRepository.SaveJobResultsAsync(jobId, (transcript.ToList(), scenes.ToList()));
+            // Tüm verileri tuple olarak gönder
+            await jobRepository.SaveJobResultsAsync(
+                jobId, 
+                (transcript.ToList(), scenes.ToList(), embeddings));
 
-            await jobRepository.CompleteJobAsync(jobId, resultId: 123);
+            await jobRepository.CompleteJobAsync(jobId, resultId: null);
             logger.LogInformation("Job {JobId}: Processing completed successfully", jobId);
         }
         catch (Exception ex)
@@ -102,7 +120,7 @@ public class VideoAnalysisOrchestrator(
             await CleanupResourcesAsync(jobId, audioPath, framesDirectory);
         }
     }
-
+     
     private async Task CleanupResourcesAsync(string jobId, string? audioPath, string? framesDirectory)
     {
         if (!string.IsNullOrEmpty(audioPath))

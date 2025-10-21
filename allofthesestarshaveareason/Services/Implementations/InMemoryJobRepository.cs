@@ -7,7 +7,9 @@ namespace allofthesestarshaveareason.Services.Implementations;
 public class InMemoryJobRepository : IJobRepository
 {
     private readonly ConcurrentDictionary<string, AnalysisStatus> _jobs = new();
+    private readonly ConcurrentDictionary<int, VideoAnalysisResult> _results = new();
     private readonly ILogger<InMemoryJobRepository> _logger;
+    private int _nextResultId = 1;
 
     public InMemoryJobRepository(ILogger<InMemoryJobRepository> logger)
     {
@@ -19,7 +21,9 @@ public class InMemoryJobRepository : IJobRepository
         var jobId = Guid.NewGuid().ToString();
         var status = new AnalysisStatus
         {
-            Status = "Oluþturuldu",
+            Id = Guid.Parse(jobId),
+            OriginalFileName = string.Empty,
+            StatusMessage = "Oluþturuldu",
             Progress = 0
         };
 
@@ -40,7 +44,7 @@ public class InMemoryJobRepository : IJobRepository
     {
         if (_jobs.TryGetValue(jobId, out var job))
         {
-            job.Status = status;
+            job.StatusMessage = status;
             job.Progress = Math.Clamp(progress, 0, 100);
             _logger.LogDebug("Job {JobId} updated: {Status} ({Progress}%)", jobId, status, progress);
         }
@@ -62,7 +66,7 @@ public class InMemoryJobRepository : IJobRepository
     {
         if (_jobs.TryGetValue(jobId, out var job))
         {
-            job.Status = "Tamamlandý";
+            job.StatusMessage = "Tamamlandý";
             job.Progress = 100;
             job.ResultId = resultId;
             _logger.LogInformation("Job completed: {JobId}", jobId);
@@ -79,8 +83,8 @@ public class InMemoryJobRepository : IJobRepository
     {
         if (_jobs.TryGetValue(jobId, out var job))
         {
-            job.Status = $"Hata: {errorMessage}";
-            job.Progress = 100;
+            job.StatusMessage = $"Hata: {errorMessage}";
+            job.Progress = -1;
             _logger.LogError("Job failed: {JobId} - {ErrorMessage}", jobId, errorMessage);
         }
         else
@@ -95,11 +99,34 @@ public class InMemoryJobRepository : IJobRepository
     {
         if (_jobs.TryGetValue(jobId, out var job))
         {
-            if (results is (List<TranscriptSegment> transcript, List<Scene> scenes))
+            if (results is ValueTuple<List<TranscriptSegment>, List<Scene>, List<SentenceEmbedding>> tuple)
             {
-                job.Transcript = transcript;
-                job.Scenes = scenes;
-                _logger.LogInformation("Job results saved: {JobId}", jobId);
+                var (transcript, scenes, embeddings) = tuple;
+                
+                // Yeni result ID oluþtur
+                var resultId = Interlocked.Increment(ref _nextResultId);
+                
+                // Ýliþkileri kur
+                for (int i = 0; i < transcript.Count && i < embeddings.Count; i++)
+                {
+                    transcript[i].Embedding = embeddings[i];
+                }
+                
+                // Result'u oluþtur ve sakla
+                var result = new VideoAnalysisResult
+                {
+                    Id = resultId,
+                    AnalysisStatusId = job.Id,
+                    ProcessedDate = DateTime.UtcNow,
+                    VideoUrl = string.Empty,
+                    Scenes = scenes,
+                    Transcript = transcript
+                };
+                
+                _results.TryAdd(resultId, result);
+                job.ResultId = resultId;
+                
+                _logger.LogInformation("Job results saved: {JobId} with ResultId: {ResultId}", jobId, resultId);
             }
         }
         else
@@ -108,5 +135,11 @@ public class InMemoryJobRepository : IJobRepository
         }
 
         return Task.CompletedTask;
+    }
+
+    public Task<VideoAnalysisResult?> GetFullResultAsync(int resultId)
+    {
+        _results.TryGetValue(resultId, out var result);
+        return Task.FromResult(result);
     }
 }

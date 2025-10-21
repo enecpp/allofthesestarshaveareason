@@ -1,0 +1,125 @@
+﻿using allofthesestarshaveareason.Data;
+using allofthesestarshaveareason.Models;
+using allofthesestarshaveareason.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace allofthesestarshaveareason.Services.Implementations
+{
+    public class EfJobRepository : IJobRepository
+    {
+        private readonly AnalysisDbContext _context;
+
+        public EfJobRepository(AnalysisDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<string> CreateJobAsync(CancellationToken cancellationToken = default)
+        {
+            var status = new AnalysisStatus
+            {
+                Id = Guid.NewGuid(),
+                OriginalFileName = string.Empty,
+                StatusMessage = "Sırada",
+                Progress = 0
+            };
+            _context.JobStatuses.Add(status);
+            await _context.SaveChangesAsync(cancellationToken);
+            return status.Id.ToString();
+        }
+
+        public async Task<AnalysisStatus?> GetJobStatusAsync(string jobId, CancellationToken cancellationToken = default)
+        {
+            if (!Guid.TryParse(jobId, out var jobGuid))
+            {
+                return null;
+            }
+            return await _context.JobStatuses.FindAsync(new object[] { jobGuid }, cancellationToken);
+        }
+
+        public async Task UpdateJobStatusAsync(string jobId, string status, int progress, CancellationToken cancellationToken = default)
+        {
+            var job = await GetJobStatusAsync(jobId, cancellationToken);
+            if (job != null)
+            {
+                job.StatusMessage = status;
+                job.Progress = progress;
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        public async Task SaveJobResultsAsync(string jobId, object results, CancellationToken cancellationToken = default)
+        {
+            if (!Guid.TryParse(jobId, out var jobGuid)) return;
+            
+            var job = await _context.JobStatuses.FindAsync(new object[] { jobGuid }, cancellationToken);
+            if (job == null) return;
+
+            if (results is ValueTuple<List<TranscriptSegment>, List<Scene>, List<SentenceEmbedding>> tuple)
+            {
+                var (transcript, scenes, embeddings) = tuple;
+                
+                // İlişkileri kur
+                for (int i = 0; i < transcript.Count && i < embeddings.Count; i++)
+                {
+                    transcript[i].Embedding = embeddings[i];
+                }
+
+                var result = new VideoAnalysisResult
+                {
+                    AnalysisStatusId = jobGuid,
+                    ProcessedDate = DateTime.UtcNow,
+                    VideoUrl = string.Empty,
+                    Scenes = scenes,
+                    Transcript = transcript
+                };
+
+                _context.Results.Add(result);
+                await _context.SaveChangesAsync(cancellationToken);
+                
+                // ResultId'yi güncelle
+                job.ResultId = result.Id;
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        public async Task<VideoAnalysisResult?> GetFullResultAsync(int resultId)
+        {
+            return await _context.Results
+                .Include(r => r.Transcript)
+                .ThenInclude(t => t.Embedding)
+                .Include(r => r.Scenes)
+                .FirstOrDefaultAsync(r => r.Id == resultId);
+        }
+
+        public async Task CompleteJobAsync(string jobId, int? resultId, CancellationToken cancellationToken = default)
+        {
+            var job = await GetJobStatusAsync(jobId, cancellationToken);
+            if (job != null)
+            {
+                job.StatusMessage = "Tamamlandı";
+                job.Progress = 100;
+                if (resultId.HasValue)
+                {
+                    job.ResultId = resultId.Value;
+                }
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        public async Task FailJobAsync(string jobId, string errorMessage, CancellationToken cancellationToken = default)
+        {
+            var job = await GetJobStatusAsync(jobId, cancellationToken);
+            if (job != null)
+            {
+                job.StatusMessage = $"Başarısız: {errorMessage}";
+                job.Progress = -1;
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+    }
+}

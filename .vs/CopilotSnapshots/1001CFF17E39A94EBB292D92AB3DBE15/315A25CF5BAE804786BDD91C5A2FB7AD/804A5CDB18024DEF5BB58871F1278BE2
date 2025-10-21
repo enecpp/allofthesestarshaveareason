@@ -1,7 +1,0 @@
-﻿namespace allofthesestarshaveareason.Models;
-
-public class SentenceEmbedding
-{
-    public required string SegmentId { get; init; }
-    public required float[] Vector { get; init; }
-}

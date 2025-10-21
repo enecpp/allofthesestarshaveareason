@@ -1,31 +1,217 @@
 @using allofthesestarshaveareason.Models
+@using allofthosestarshaveareason.DTOs
 
-<MudTimeline TimelineOrientation="TimelineOrientation.Horizontal">
-    @foreach (var scene in Scenes)
+<MudPaper Elevation="2" Class="scene-timeline-wrapper pa-4">
+    <div class="d-flex justify-space-between align-center mb-3">
+        <MudText Typo="Typo.h6" Style="font-weight: 600;">
+            <MudIcon Icon="@Icons.Material.Filled.MovieFilter" Class="mr-2" />
+            Sahne Zaman Çizelgesi
+        </MudText>
+        @if (HasScenes)
+        {
+            <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Text">
+                @SceneCount Sahne
+            </MudChip>
+        }
+    </div>
+
+    @if (HasScenes)
     {
-        <MudTimelineItem Color="Color.Primary">
-            <ItemContent>
-                <MudButton Variant="MudBlazor.Variant.Text" OnClick="@(() => OnSceneClicked.InvokeAsync(scene.StartTime))">
-                    <div>
-                        <MudText Typo="Typo.body2">@FormatTime(scene.StartTime)</MudText>
-                        <MudText Typo="Typo.subtitle2">@scene.Title</MudText>
+        <!-- Timeline Bar Container -->
+        <div class="scene-timeline-container">
+            @foreach (var (scene, index) in GetEnumerableScenes().Select((value, i) => (value, i)))
+            {
+                var width = GetSceneWidthPercentage(scene);
+                var color = GetSceneColor(index);
+                
+                <div class="scene-segment" 
+                     style="width: @(width)%; background-color: @color;"
+                     title="@(GetSceneTitle(scene)) (@FormatTime(GetStartTime(scene)) - @FormatTime(GetEndTime(scene)))"
+                     @onclick="() => SceneClicked(GetStartTime(scene))">
+                    
+                    <div class="scene-content">
+                        <MudText Typo="Typo.caption" Class="scene-title">
+                            @GetSceneTitle(scene)
+                        </MudText>
                     </div>
-                </MudButton>
-            </ItemContent>
-        </MudTimelineItem>
+                    
+                    <!-- Hover Tooltip -->
+                    <div class="scene-tooltip">
+                        <MudText Typo="Typo.caption" Style="font-weight: 600;">@GetSceneTitle(scene)</MudText>
+                        <MudText Typo="Typo.caption">
+                            @FormatTime(GetStartTime(scene)) - @FormatTime(GetEndTime(scene))
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            Süre: @FormatDuration(GetEndTime(scene) - GetStartTime(scene))
+                        </MudText>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Timeline Labels -->
+        <div class="timeline-labels mt-2">
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                00:00
+            </MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                @FormatTime(totalDuration)
+            </MudText>
+        </div>
+
+        <!-- Scene Cards (Detailed View) -->
+        <MudExpansionPanels Class="mt-4" Elevation="0">
+            <MudExpansionPanel Text="Sahne Detaylarý" IsInitiallyExpanded="false">
+                <MudList T="string" Dense="true">
+                    @foreach (var (scene, index) in GetEnumerableScenes().Select((value, i) => (value, i)))
+                    {
+                        <MudListItem T="string" OnClick="() => SceneClicked(GetStartTime(scene))" Icon="@Icons.Material.Filled.PlayArrow">
+                            <div class="d-flex justify-space-between align-center">
+                                <div>
+                                    <MudText Typo="Typo.body2" Style="font-weight: 600;">
+                                        @(index + 1). @GetSceneTitle(scene)
+                                    </MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        @FormatTime(GetStartTime(scene)) - @FormatTime(GetEndTime(scene))
+                                        (@FormatDuration(GetEndTime(scene) - GetStartTime(scene)))
+                                    </MudText>
+                                </div>
+                                <MudChip T="string" Size="Size.Small" Style="@($"background-color: {GetSceneColor(index)}; color: white;")">
+                                    Sahne @(index + 1)
+                                </MudChip>
+                            </div>
+                        </MudListItem>
+                        <MudDivider />
+                    }
+                </MudList>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
     }
-</MudTimeline>
+    else
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            <div class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.MovieFilter" Class="mr-2" />
+                Görüntülenecek sahne bulunamadý.
+            </div>
+        </MudAlert>
+    }
+</MudPaper>
 
 @code {
+    /// <summary>
+    /// Görüntülenecek sahne listesi (Model)
+    /// </summary>
     [Parameter]
-    public List<Scene> Scenes { get; set; } = new();
+    public List<Scene>? Scenes { get; set; }
 
+    /// <summary>
+    /// Görüntülenecek sahne listesi (DTO)
+    /// </summary>
+    [Parameter]
+    public List<SceneDto>? DtoScenes { get; set; }
+
+    /// <summary>
+    /// Bir sahneye týklandýðýnda tetiklenir
+    /// </summary>
     [Parameter]
     public EventCallback<double> OnSceneClicked { get; set; }
 
+    private double totalDuration = 1.0;
+
+    private readonly string[] sceneColors = new[]
+    {
+        "#1e88e5", "#43a047", "#fb8c00", "#8e24aa", "#e53935",
+        "#00acc1", "#fdd835", "#3949ab", "#00897b", "#f4511e"
+    };
+
+    private bool HasScenes => (Scenes?.Any() ?? false) || (DtoScenes?.Any() ?? false);
+    private int SceneCount => Scenes?.Count ?? DtoScenes?.Count ?? 0;
+
+    protected override void OnParametersSet()
+    {
+        if (Scenes != null && Scenes.Any())
+        {
+            totalDuration = Scenes.Max(s => s.EndTime);
+        }
+        else if (DtoScenes != null && DtoScenes.Any())
+        {
+            totalDuration = DtoScenes.Max(s => s.EndTime);
+        }
+    }
+
+    private IEnumerable<object> GetEnumerableScenes()
+    {
+        if (Scenes != null && Scenes.Any())
+            return Scenes.Cast<object>();
+        if (DtoScenes != null && DtoScenes.Any())
+            return DtoScenes.Cast<object>();
+        return Enumerable.Empty<object>();
+    }
+
+    private string GetSceneTitle(object scene)
+    {
+        return scene switch
+        {
+            Scene s => s.Title,
+            SceneDto d => d.Title,
+            _ => "Unknown"
+        };
+    }
+
+    private double GetStartTime(object scene)
+    {
+        return scene switch
+        {
+            Scene s => s.StartTime,
+            SceneDto d => d.StartTime,
+            _ => 0
+        };
+    }
+
+    private double GetEndTime(object scene)
+    {
+        return scene switch
+        {
+            Scene s => s.EndTime,
+            SceneDto d => d.EndTime,
+            _ => 0
+        };
+    }
+
+    private double GetSceneWidthPercentage(object scene)
+    {
+        if (totalDuration == 0) return 0;
+        var duration = GetEndTime(scene) - GetStartTime(scene);
+        return (duration / totalDuration) * 100.0;
+    }
+
+    private string GetSceneColor(int index)
+    {
+        return sceneColors[index % sceneColors.Length];
+    }
+
+    private async Task SceneClicked(double time)
+    {
+        if (OnSceneClicked.HasDelegate)
+        {
+            await OnSceneClicked.InvokeAsync(time);
+        }
+    }
+
     private string FormatTime(double seconds)
     {
-        var ts = TimeSpan.FromSeconds(seconds);
-        return ts.ToString(@"mm\:ss");
+        var timeSpan = TimeSpan.FromSeconds(seconds);
+        return timeSpan.ToString(@"mm\:ss");
+    }
+
+    private string FormatDuration(double seconds)
+    {
+        var timeSpan = TimeSpan.FromSeconds(seconds);
+        if (timeSpan.TotalMinutes >= 1)
+        {
+            return $"{(int)timeSpan.TotalMinutes}dk {timeSpan.Seconds}sn";
+        }
+        return $"{timeSpan.Seconds}sn";
     }
 }

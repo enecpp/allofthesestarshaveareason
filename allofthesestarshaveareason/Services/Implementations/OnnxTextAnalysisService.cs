@@ -1,9 +1,10 @@
-﻿using allofthesestarshaveareason.Models;
+using allofthesestarshaveareason.Models;
 using allofthesestarshaveareason.Services.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using Microsoft.ML.Tokenizers; 
+using Microsoft.ML.Tokenizers;
+using TranscriptSegment = allofthesestarshaveareason.Models.TranscriptSegment;
 
 namespace allofthesestarshaveareason.Services.Implementations;
 
@@ -21,7 +22,6 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
 
         try
         {
-            // Modeli ve tokenizer'ı yükle
             var modelPath = Path.Combine(env.ContentRootPath, "wwwroot", "ml-models", "model.onnx");
             var vocabPath = Path.Combine(env.ContentRootPath, "wwwroot", "ml-models", "vocab.txt");
 
@@ -36,8 +36,6 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
             }
 
             _session = new InferenceSession(modelPath);
-            
-            // Load vocab file and create tokenizer
             using var stream = File.OpenRead(vocabPath);
             _tokenizer = BertTokenizer.Create(stream);
             
@@ -50,22 +48,25 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         }
     }
 
-    public async Task<List<SentenceEmbedding>> GenerateEmbeddingsAsync(List<TranscriptSegment> segments)
+    public async Task<List<SentenceEmbeddingDto>> GenerateEmbeddingsAsync(List<TranscriptSegment> segments)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(OnnxTextAnalysisService));
+        }
         ArgumentNullException.ThrowIfNull(segments);
 
         if (segments.Count == 0)
         {
             _logger.LogWarning("No segments provided for embedding generation");
-            return [];
+            return new List<SentenceEmbeddingDto>();
         }
 
         return await Task.Run(() =>
         {
             try
             {
-                List<SentenceEmbedding> embeddings = [];
+                var embeddings = new List<SentenceEmbeddingDto>();
 
                 foreach (var segment in segments)
                 {
@@ -75,7 +76,7 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
                         continue;
                     }
 
-                    SentenceEmbedding? embedding = GenerateEmbeddingForSingleText(text, $"segment_{segments.IndexOf(segment)}");
+                    var embedding = GenerateEmbeddingForSingleText(text, $"segment_{segments.IndexOf(segment)}");
                     if (embedding != null)
                     {
                         embeddings.Add(embedding);
@@ -96,9 +97,12 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
     public List<TranscriptSegment> FindSimilarSentences(
         string query, 
         List<TranscriptSegment> allSegments, 
-        List<SentenceEmbedding> allEmbeddings)
+        List<SentenceEmbeddingDto> allEmbeddings)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(OnnxTextAnalysisService));
+        }
         ArgumentNullException.ThrowIfNull(query);
         ArgumentNullException.ThrowIfNull(allSegments);
         ArgumentNullException.ThrowIfNull(allEmbeddings);
@@ -106,26 +110,24 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         if (string.IsNullOrWhiteSpace(query))
         {
             _logger.LogWarning("Empty query provided for similarity search");
-            return [];
+            return new List<TranscriptSegment>();
         }
 
         if (allSegments.Count == 0 || allEmbeddings.Count == 0)
         {
-            return [];
+            return new List<TranscriptSegment>();
         }
 
         try
         {
-            // 1. Arama sorgusunu da aynı şekilde vektöre dönüştür.
-            float[]? queryEmbedding = GenerateEmbeddingsForSingleText(query);
-            if (queryEmbedding is not { Length: > 0 })
+            var queryEmbedding = GenerateEmbeddingsForSingleText(query);
+            if (queryEmbedding == null || queryEmbedding.Length == 0)
             {
                 _logger.LogWarning("Failed to generate embedding for query");
-                return [];
+                return new List<TranscriptSegment>();
             }
 
-            // 2. Benzerlik skorlarını hesapla
-            List<(TranscriptSegment segment, double score)> scoredSegments = [];
+            var scoredSegments = new List<(TranscriptSegment segment, double score)>();
             int segmentCount = Math.Min(allSegments.Count, allEmbeddings.Count);
             
             for (int i = 0; i < segmentCount; i++)
@@ -134,11 +136,10 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
                 scoredSegments.Add((allSegments[i], score));
             }
 
-            // 3. Skorlara göre sırala ve en alakalı olanları döndür
-            List<TranscriptSegment> results = scoredSegments
+            var results = scoredSegments
                 .Where(s => !double.IsNaN(s.score))
                 .OrderByDescending(s => s.score)
-                .Take(5) // En iyi 5 sonucu al
+                .Take(5)
                 .Select(s => s.segment)
                 .ToList();
 
@@ -148,22 +149,21 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error finding similar sentences");
-            return [];
+            return new List<TranscriptSegment>();
         }
     }
 
-    // Tek bir metin için SentenceEmbedding oluşturan yardımcı metot
-    private SentenceEmbedding? GenerateEmbeddingForSingleText(string text, string segmentId)
+    private SentenceEmbeddingDto? GenerateEmbeddingForSingleText(string text, string segmentId)
     {
         try
         {
-            float[]? vector = GenerateEmbeddingsForSingleText(text);
-            if (vector is not { Length: > 0 })
+            var vector = GenerateEmbeddingsForSingleText(text);
+            if (vector == null || vector.Length == 0)
             {
                 return null;
             }
 
-            return new SentenceEmbedding
+            return new SentenceEmbeddingDto
             {
                 SegmentId = segmentId,
                 Vector = vector
@@ -176,38 +176,35 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         }
     }
 
-    // Tek bir metin için embedding vektörü oluşturan yardımcı metot
     private float[]? GenerateEmbeddingsForSingleText(string text)
     {
         try
         {
-            // Tokenize the text
             var encoded = _tokenizer.EncodeToTokens(text, out _);
             
-            if (encoded is not { Count: > 0 })
+            if (encoded == null || encoded.Count == 0)
             {
                 return null;
             }
 
-            // Convert tokens to IDs
-            List<int> ids = [..encoded.Select(t => t.Id)];
+            var ids = encoded.Select(t => t.Id).ToList();
             int tokenCount = ids.Count;
-            List<int> attentionMask = Enumerable.Repeat(1, tokenCount).ToList();
-            List<int> tokenTypeIds = Enumerable.Repeat(0, tokenCount).ToList();
+            var attentionMask = Enumerable.Repeat(1, tokenCount).ToList();
+            var tokenTypeIds = Enumerable.Repeat(0, tokenCount).ToList();
 
-            DenseTensor<long> inputIds = ConvertToTensor(ids);
-            DenseTensor<long> attentionMaskTensor = ConvertToTensor(attentionMask);
-            DenseTensor<long> tokenTypeIdsTensor = ConvertToTensor(tokenTypeIds);
+            var inputIds = ConvertToTensor(ids);
+            var attentionMaskTensor = ConvertToTensor(attentionMask);
+            var tokenTypeIdsTensor = ConvertToTensor(tokenTypeIds);
 
-            List<NamedOnnxValue> inputs =
-            [
+            var inputs = new List<NamedOnnxValue>
+            {
                 NamedOnnxValue.CreateFromTensor("input_ids", inputIds),
                 NamedOnnxValue.CreateFromTensor("attention_mask", attentionMaskTensor),
                 NamedOnnxValue.CreateFromTensor("token_type_ids", tokenTypeIdsTensor)
-            ];
+            };
 
-            using IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results = _session.Run(inputs);
-            Tensor<float>? lastHiddenState = results.First().AsTensor<float>();
+            using var results = _session.Run(inputs);
+            var lastHiddenState = results.First().AsTensor<float>();
             return MeanPooling(lastHiddenState, attentionMask);
         }
         catch (Exception ex)
@@ -217,24 +214,21 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         }
     }
 
-    // List<int> to DenseTensor<long> converter
     private static DenseTensor<long> ConvertToTensor(List<int> ids)
     {
         if (ids.Count == 0)
         {
             return new DenseTensor<long>(new long[] { 0 }, new[] { 1, 1 });
         }
-
-        long[] longArray = [..ids.Select(x => (long)x)];
+        var longArray = ids.Select(x => (long)x).ToArray();
         return new DenseTensor<long>(longArray, new[] { 1, longArray.Length });
     }
 
-    // Model çıktısını anlamlı bir cümle vektörüne dönüştüren metot
     private static float[] MeanPooling(Tensor<float>? tokenEmbeddings, List<int> attentionMask)
     {
         if (tokenEmbeddings == null || attentionMask.Count == 0)
         {
-            return [];
+            return Array.Empty<float>();
         }
 
         int tokenCount = attentionMask.Count;
@@ -242,15 +236,15 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         
         if (embeddingDim <= 0)
         {
-            return [];
+            return Array.Empty<float>();
         }
 
-        float[] pooled = new float[embeddingDim];
+        var pooled = new float[embeddingDim];
         int validTokenCount = 0;
 
         for (int i = 0; i < tokenCount; i++)
         {
-            if (attentionMask[i] == 1) // Sadece gerçek token'ları (padding olmayanları) hesaba kat
+            if (attentionMask[i] == 1)
             {
                 validTokenCount++;
                 for (int j = 0; j < embeddingDim; j++)
@@ -277,7 +271,6 @@ public class OnnxTextAnalysisService : ITextAnalysisService, IDisposable
         return pooled;
     }
 
-    // İki vektör arasındaki anlamsal yakınlığı ölçen metot
     private static double CosineSimilarity(float[] vec1, float[] vec2)
     {
         ArgumentNullException.ThrowIfNull(vec1);
